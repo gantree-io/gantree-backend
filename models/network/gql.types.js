@@ -7,7 +7,8 @@ const Node = new GraphQLObjectType({
 		_id: { type: GraphQLString },
 		name: { type: GraphQLString },
 		ip: { type: GraphQLString },
-		provider: { type: GraphQLString }
+		provider: { type: GraphQLString },
+		status: { type: GraphQLString }
 	})
 })
 
