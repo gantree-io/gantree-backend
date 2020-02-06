@@ -12,6 +12,14 @@ const Node = new GraphQLObjectType({
 	})
 })
 
+const NodeList = new GraphQLObjectType({
+	name: 'nodeList',
+	fields: () => ({
+		nodes: { type: new GraphQLList(Node) },
+		response: { type: ServerResponseType }
+	})
+})
+
 const Network = new GraphQLObjectType({
 	name: 'network',
 	fields: () => ({
@@ -32,4 +40,6 @@ const NetworkList = new GraphQLObjectType({
 module.exports = {
 	Network: Network,
 	NetworkList: NetworkList,
+	NodeList: NodeList,
+	Node: Node
 }

@@ -13,7 +13,8 @@ const CrudeAuth = require('./util/crudeauth')
 
 // gql query whitelist
 const authWhitelist = [
-	'networkList'
+	'networkList',
+	'nodeList'
 ]
 
 app.use(cors())
