@@ -1,4 +1,4 @@
-# 🏄‍♂️ Gantree | GRaphQL API Server
+# 🏄‍♂️ Gantree | GraphQL API Server
 
 Spin up an instance:
 

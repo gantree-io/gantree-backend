@@ -3,12 +3,13 @@
   "version": "0.0.1",
   "description": "Gantree Server",
   "dependencies": {
+    "apollo-server": "^2.10.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^4.0.0",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
-    "graphql": "^14.5.4",
+    "graphql": "^14.6.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.14",
     "md5": "^2.2.1",
@@ -19,8 +20,8 @@
   "devDependencies": {},
   "_moduleAliases": {
     "@root": ".",
-    "@models": "models",
-    "@helpers": "helpers",
+    "@interface": "interface",
+    "@storage": "storage",
     "@util": "util"
   }
 }
