@@ -9,8 +9,14 @@ const queries = `
 `
 
 const resolvers = {
-	networks: async () => await model.find({}),
-	network: async (parent, {_id}) => model.findById(_id)
+	networks: async () => {
+		await new Promise(r => setTimeout(r, 500));
+		return await model.find({})
+	},
+	network: async (parent, {_id}) => {
+		await new Promise(r => setTimeout(r, 1000));
+		return model.findById(_id)
+	}
 }
 
 module.exports = {

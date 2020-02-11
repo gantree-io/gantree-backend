@@ -5,8 +5,6 @@ const { ApolloServer } = require('apollo-server');
 const schema = require('@interface/schema')
 const mongoose = require('mongoose');
 
-
-
 mongoose.Promise = global.Promise
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true })
 mongoose.connection.once('open', () => {

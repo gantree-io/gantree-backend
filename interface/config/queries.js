@@ -10,10 +10,11 @@ const queries = `
 
 const resolvers = {
 	configs: async () => {
-		const configs = await model.find({})
-		return configs
+		await new Promise(r => setTimeout(r, 500));
+		return await model.find({})
 	},
 	config: async (parent, {_id}) => {
+		await new Promise(r => setTimeout(r, 500));
 		return await model.findById(_id)
 	},
 }
