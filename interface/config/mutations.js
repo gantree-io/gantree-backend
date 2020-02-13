@@ -1,10 +1,12 @@
+const GraphQLJSON = require('graphql-type-json')
 const model = require('@storage/config')
 
 const mutation = `
+	scalar JSON
 	extend type Mutation {
 		addConfig(
 			name: String!
-			chainspec: String!
+			chainspec: JSON!
 		): Config!
 		deleteConfig(
 			id: String!

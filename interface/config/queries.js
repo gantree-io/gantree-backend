@@ -14,7 +14,7 @@ const resolvers = {
 		return await model.find({})
 	},
 	config: async (parent, {_id}) => {
-		await new Promise(r => setTimeout(r, 500));
+		await new Promise(r => setTimeout(r, 1500));
 		return await model.findById(_id)
 	},
 }

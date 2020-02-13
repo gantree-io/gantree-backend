@@ -1,7 +1,9 @@
+const GraphQLJSON = require('graphql-type-json')
+
 module.exports = `
 	type Config {
 		_id: String
 		name: String
-		chainspec: String
+		chainspec: JSON
 	}
 `;
