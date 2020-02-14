@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const model = require('@storage/network')
+const print = require('@util/model').print
 
 const queries = `
 	extend type Query {
@@ -15,7 +16,7 @@ const resolvers = {
 	},
 	network: async (parent, {_id}) => {
 		await new Promise(r => setTimeout(r, 1000));
-		return model.findById(_id)
+		return await model.findById(_id);
 	}
 }
 

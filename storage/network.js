@@ -57,6 +57,7 @@ const schema = new mongoose.Schema(
 	{ timestamps: util.timestamps }
 )
 
+schema.set('toJSON', { virtuals: true })
 
 const autoPopulate = function(next) {
 	this.populate('nodes').populate('config');
