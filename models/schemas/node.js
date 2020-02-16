@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const util = require('./_util');
 
-const schema = new mongoose.Schema(
+module.exports = new mongoose.Schema(
 	{
 		name: {
 			type : String,
@@ -32,9 +32,7 @@ const schema = new mongoose.Schema(
 			trim: true
 		}
 	},
-	{ timestamps: util.timestamps }
+	{ 
+		timestamps: util.timestamps
+	}
 )
-
-const model = mongoose.model('node', schema)
-
-module.exports = model

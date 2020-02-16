@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const model = require('@storage/config')
+const model = require('@models/config')
 
 const queries = `
 	extend type Query {

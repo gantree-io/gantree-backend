@@ -1,5 +1,4 @@
-const Network = require('@storage/network')
-const Node = require('@storage/node')
+const Network = require('@models/network')
 const _ = require('lodash');
 
 const mutation = `
@@ -20,28 +19,7 @@ const mutation = `
 `
 
 const resolvers = {
-	addNetwork: async (parent, args) => {
-
-		args.nodes = []
-		
-		// add all nodes to db
-		for (var i = 0; i < args.count; i++) {
-			let node = await Node.create({
-				name: `node-${i}`,
-				provider: args.provider,
-				status: 'PROCESSING',
-				type: args.validator === true ? 'VALIDATOR' : 'FULL'
-			})
-			
-			// push _id to nodes field in args
-			args.nodes.push(node._id)
-		}
-		
-		// create network
-		const network = await Network.create(args)
-		
-		return network
-	},
+	addNetwork: async (parent, _network) => await Network.add(_network),
 	addNode: (parent, args) => {
 		console.log(args.name)
 		return args.name

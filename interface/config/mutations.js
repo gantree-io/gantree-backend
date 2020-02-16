@@ -1,5 +1,5 @@
 const GraphQLJSON = require('graphql-type-json')
-const model = require('@storage/config')
+const model = require('@models/config')
 
 const mutation = `
 	scalar JSON

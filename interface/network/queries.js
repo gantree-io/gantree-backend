@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const model = require('@storage/network')
+const model = require('@models/network')
 const print = require('@util/model').print
 
 const queries = `
