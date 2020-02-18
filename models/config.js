@@ -2,12 +2,12 @@ const mongoose = require('mongoose')
 const ConfigSchema = require('@schemas/config');
 
 // model
-const model = mongoose.model('config', ConfigSchema)
+const Config = mongoose.model('config', ConfigSchema)
 
 // custom model methods
-model.testMethod = () => {
+Config.testMethod = () => {
 	console.log('testing');
 	return true
 }
 
-module.exports = model
+module.exports = Config

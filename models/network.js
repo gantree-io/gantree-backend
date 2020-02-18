@@ -3,30 +3,30 @@ const NetworkSchema = require('@schemas/network');
 const Node = require('./node')
 
 // model
-const model = mongoose.model('network', NetworkSchema)
+const Network = mongoose.model('network', NetworkSchema)
 
 // add a new network
-model.add = async network => {
+Network.add = async _network => {
 	// nodes to empty array
-	network.nodes = []
+	_network.nodes = []
 	
 	// add all nodes to db
-	for (var i = 0; i < network.count; i++) {
+	for (var i = 0; i < _network.count; i++) {
 		let node = await Node.create({
 			name: `node-${i}`,
-			provider: network.provider,
+			provider: _network.provider,
 			status: 'PENDING',
-			type: network.validator === true ? 'VALIDATOR' : 'FULL'
+			type: _network.validator === true ? 'VALIDATOR' : 'FULL'
 		})
 		
 		// push _id to nodes field in network
-		network.nodes.push(node._id)
+		_network.nodes.push(node._id)
 	}
 	
 	// TODO: pipe to worker/taskrunner? to start build process/job & send socket updates
 	// or just palm off to async functon?
 
-	return await model.create(network)
+	return await Network.create(_network)
 }
 
-module.exports = model
+module.exports = Network
