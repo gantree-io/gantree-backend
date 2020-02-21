@@ -41,7 +41,7 @@ schema.set('toJSON', { virtuals: true })
 schema.post('find', function(docs) {
 
 	const sendUpdate = room => {
-		room.emit('STATUS', {
+		room.emit('NODESTATUS', {
 			nodes: {
 				online: Math.floor(Math.random() * Math.floor(5)),
 				pending: Math.floor(Math.random() * Math.floor(5)),
