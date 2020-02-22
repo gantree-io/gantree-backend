@@ -1,39 +1,37 @@
 const mongoose = require('mongoose')
-const firebase = require('firebase-admin');
-const jwt = require('jsonwebtoken');
-const Team = require('./team')
-const UserSchema = require('@schemas/user');
-const User = mongoose.model('user', UserSchema)
-const Hotwire = require('@util/hotwire')
 const nodemailer = require("nodemailer");
 
-const firebaseConfig = {
-	apiKey: process.env.FIREBASE_APIKEY,
-	authDomain: process.env.FIREBASE_AUTHDOMAIN,
-	databaseURL: process.env.FIREBASE_DATABASEURL,
-	projectId: process.env.FIREBASE_PROJECTID,
-	storageBucket: process.env.FIREBASE_STORAGEBUCKET,
-	messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
-	appId: process.env.FIREBASE_APPID,
-}
+// schemas
+const UserSchema = require('@schemas/user');
 
-firebase.initializeApp(firebaseConfig)
+// models
+const Team = require('./team')
+const User = mongoose.model('user', UserSchema)
 
-User.authUsingFirebaseToken = async token => {
-	const firebaseUser = await firebase.auth().verifyIdToken(token)
+// util
+const Hotwire = require('@util/hotwire')
+const Firebase = require('@util/firebase')
+const Auth = require('@util/auth')
+
+/**
+ * Authenticate user by firebase token.
+ * @param {String} token - the firebase token sent from the client.
+ * @returns {User} - user + auth tokens
+ */
+User.authByFirebaseToken = async token => {
+	const {uid, name, email} = await Firebase.verifyToken(token)
 
 	// check DB for existing account
-	let _user = await User.findOne({'uid': firebaseUser.uid})
+	let _user = await User.findOne({'uid': uid})
 
 	// if not found: create local account
 	if(!_user){
 		
 		// new user
 		_user = await User.create({
-			name: firebaseUser.name,
-			email: firebaseUser.email,
-			uid: firebaseUser.uid,
-			//team: _team._id,
+			name: name,
+			email: email,
+			uid: uid,
 			status: 'ACTIVE'
 		})
 
@@ -44,34 +42,51 @@ User.authUsingFirebaseToken = async token => {
 		await User.findByIdAndUpdate(_user._id, {team: _team._id})
 	}
 	
-	return _user
+	return {
+		..._user.toObject(),
+		tokens: Auth.generateTokens(_user.toObject())
+	}
 }
 
-User.genrateAuthToken = async payload => jwt.sign(payload, process.env.SECRET_KEY)
-
-//todo
-User.genrateRefreshToken = async (user, auth_token) => 'xxx-todo-xxx'
-
-User.setStatus = async (_id, status) => {
-	await User.updateOne({_id: _id}, {status: status})
-	let _user = await User.findById(_id);
-	Hotwire.publish(_id, `UPDATE`, _user)
-	return _user;
-}
-
+/**
+ * Add a new user to a team & send invitation.
+ * @param {String} email - the user email address.
+ * @returns {User} - the newly created user
+ */
 User.add = async email => {
-	let _user = await User.create({email: email, team: '5e4a53efaa93387adf02a031', status: 'INVITATION_SENT'})
-	User.sendInvitation(_user._id)
+	let _user = await User.create({
+		email: email, 
+		team: '5e4a53efaa93387adf02a031', 
+		status: 'INVITATION_SENT'
+	})
+	await User.sendInvitation(_user._id)
 	Hotwire.publish('USER', 'ADD', _user)
 	return _user
 }
 
+/**
+ * Set a user status.
+ * @param {String} _id - the mongoose user _id.
+ * @param {String} status - the new status to set.
+ * @returns {Boolean}
+ */
+User.setStatus = async (_id, status) => {
+	// TODO test auth levels
+	await User.updateOne({_id: _id}, {status: status})
+	let _user = await User.findById(_id);
+	Hotwire.publish(_id, `UPDATE`, _user)
+	return true
+}
+
+/**
+ * Send an invitation to an email address.
+ * @param {String} _id - the user mongoose ID.
+ * @returns {Boolean}
+ */
 User.sendInvitation = async _id => {
 	let _user = await User.findById(_id)
 
-	if(_user.status !== 'INVITATION_SENT'){
-		throw new Error("Blah BLah")
-	}
+	if(_user.status !== 'INVITATION_SENT') throw new Error("Can only send invitations to users who are waiting on them")
 
 	try {
 
@@ -103,15 +118,19 @@ User.sendInvitation = async _id => {
 		console.log(e);
 	}
 
-	return _user
+	return true
 }
 
+/**
+ * Delete a user by _id.
+ * @param {String} _id - the user mongoose ID.
+ * @returns {Boolean}
+ */
 User.delete = async _id => {
-	console.log(_id)
+	// TODO test auth levels
 	await User.findByIdAndDelete(_id)
 	Hotwire.publish('USER', 'DELETE')
 	return true
 }
-
 
 module.exports = User
