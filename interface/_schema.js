@@ -4,6 +4,7 @@ const Config = require('./config')
 const Network = require('./network')
 const User = require('./user')
 const Team = require('./team')
+const Keys = require('./keys')
 
 const rootDef = gql`
 	type Query {
@@ -21,12 +22,14 @@ module.exports = makeExecutableSchema({
 		Config.typeDef, 
 		Network.typeDef, 
 		User.typeDef,
-		Team.typeDef
+		Team.typeDef,
+		Keys.typeDef,
 	],
 	resolvers: [
 		Config.resolvers,
 		Network.resolvers, 
 		User.resolvers,
-		Team.resolvers
+		Team.resolvers,
+		Keys.resolvers,
 	],
 });

@@ -1,3 +1,4 @@
+const { AuthenticationError } = require('apollo-server');
 const jwt = require('jsonwebtoken');
 
 /**
@@ -29,8 +30,31 @@ const generateTokens = async payload => {
 	}
 }
 
+const handleAuth = (whitelist, {req, res}) => {
+	const isIntrospectionQuery = null === req.body.operationName || 'IntrospectionQuery' === req.body.operationName
+
+	try {
+		if(whitelist.includes(req.body.operationName) || isIntrospectionQuery){
+			return 
+		}else{
+			const token = req.headers.authorization;
+
+			if(!token || !token.startsWith("Bearer ")) throw new Error('You must be logged in to perform this operation'); 
+
+			const user = jwt.verify(token.substring(7, token.length), process.env.SECRET_KEY);
+
+			if(!user) throw new Error('Incorrect authentication details'); 
+
+			return { user };
+		}
+	} catch(e) {
+		throw new AuthenticationError(e); 
+	}
+}
+
 module.exports = {
 	generateAuthToken: generateAuthToken,
 	generateRefreshToken: generateRefreshToken,
-	generateTokens: generateTokens
+	generateTokens: generateTokens,
+	handleAuth: handleAuth
 }
