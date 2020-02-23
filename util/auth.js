@@ -31,21 +31,19 @@ const generateTokens = async payload => {
 }
 
 const handleAuth = (whitelist, {req, res}) => {
-	const isIntrospectionQuery = null === req.body.operationName || 'IntrospectionQuery' === req.body.operationName
-
 	try {
-		if(whitelist.includes(req.body.operationName) || isIntrospectionQuery){
-			return 
+		const isIntrospectionQuery = null === req.body.operationName || 'IntrospectionQuery' === req.body.operationName
+		const token = req.headers.authorization.split(' ')[1]
+
+		if(token){
+			const user = jwt.verify(token, process.env.SECRET_KEY);
+			if(!user) throw new Error('Token authentication failed');
+			req.user = user
+			return req
+		}else if(whitelist.includes(req.body.operationName) || isIntrospectionQuery){
+			return req
 		}else{
-			const token = req.headers.authorization;
-
-			if(!token || !token.startsWith("Bearer ")) throw new Error('You must be logged in to perform this operation'); 
-
-			const user = jwt.verify(token.substring(7, token.length), process.env.SECRET_KEY);
-
-			if(!user) throw new Error('Incorrect authentication details'); 
-
-			return { user };
+			throw new Error('Incorrect authentication details'); 
 		}
 	} catch(e) {
 		throw new AuthenticationError(e); 

@@ -14,17 +14,17 @@ module.exports = {
 		}
 
 		extend type Mutation {
-			addKey(key: String!): Key!
+			addKey(key: String!, provider: String!): Key!
 			deleteKey(_id: String!):  Boolean!
 		}
 	`,
 	resolvers: {
 	 	Query: {
-	 		keys: async (parent, {user}) => await Key.fetchAll()
+	 		keys: async (parent, {}, {user}) => await Key.fetchAll(user.team._id)
 	 	},
 	 	Mutation: {
-	 		addKey: async (parent, {key, user}) => await Key.add(key),
-	 		deleteKey: async (parent, {_id}) => await Key.delete(_id),
+	 		addKey: async (parent, args, {user}) => await Key.add(args, user.team._id),
+	 		deleteKey: async (parent, args, {user}) => await Key.delete(args, user.team._id),
 	 	}
 	}
 }
