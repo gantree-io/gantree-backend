@@ -65,16 +65,25 @@ User.add = async email => {
 }
 
 /**
+ * Set a users' name.
+ * @param {String} name - the user name.
+ * @returns {User} - the updates user
+ */
+User.setName = async (fields, {_id}) => {
+	let user = await User.findByIdAndUpdate(_id, {name: fields.name}, {new: true})
+	Hotwire.publish(_id, `UPDATE`, user)
+	return user
+}
+
+/**
  * Set a user status.
  * @param {String} _id - the mongoose user _id.
  * @param {String} status - the new status to set.
  * @returns {Boolean}
  */
 User.setStatus = async (_id, status) => {
-	// TODO test auth levels
-	await User.updateOne({_id: _id}, {status: status})
-	let _user = await User.findById(_id);
-	Hotwire.publish(_id, `UPDATE`, _user)
+	let user = await User.findByIdAndUpdate(_id, {status: status}, {new: true})
+	Hotwire.publish(_id, `UPDATE`, user)
 	return true
 }
 

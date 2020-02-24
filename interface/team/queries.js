@@ -9,14 +9,9 @@ const queries = `
 `
 
 const resolvers = {
-	team: async (parent, {user}) => {
-		//fake user account
-		user = {
-			team: '5e4a53efaa93387adf02a031'
-		}
-
-		const team = await Team.findById(user.team)
-		const users = await User.find({ team: user.team});
+	team: async (parent, {aa}, {user}) => {
+		const team = await Team.findById(user.team._id)
+		const users = await User.find({ team: team._id});
 
 		return {
 			...team.toObject(),

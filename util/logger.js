@@ -1,0 +1,1 @@
+module.exports = (msg, type='log') => (/true/i).test(process.env.LOGGING_ON) && console[type](msg)

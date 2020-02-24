@@ -4,7 +4,6 @@ module.exports = {
 	typeDef: `
 		type Key {
 			_id: String
-			key: String
 			provider: String
 			team: Team
 		}

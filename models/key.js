@@ -26,7 +26,6 @@ Key.add = async ({key, provider}, team) => {
 	return _key
 }
 
-
 Key.delete = async ({_id}, team) => {
 	let _key = await Key.find({
 		_id: _id,

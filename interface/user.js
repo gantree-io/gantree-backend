@@ -23,6 +23,7 @@ module.exports = {
 
 		extend type Mutation {
 			addUser(email: String!): User!
+			setName(name: String!): User!
 			deleteUser(_id: String!):  Boolean!
 			resendInvitation(_id: String!): Boolean!
 			activateUser(_id: String!): Boolean!
@@ -35,6 +36,7 @@ module.exports = {
 	 	},
 	 	Mutation: {
 	 		addUser: async (parent, {email}) => await User.add(email),
+	 		setName: async (parent, args, {user}) => await User.setName(args, user),
 	 		deleteUser: async (parent, {_id}) => await User.delete(_id),
 	 		resendInvitation: async (parent, {_id}) => await User.sendInvitation(_id),
 	 		activateUser: async (parent, {_id}) => await User.setStatus(_id, 'ACTIVE'),

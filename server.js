@@ -12,7 +12,7 @@ const authWhitelist = [
 ]
 
 mongoose.Promise = global.Promise
-mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
 mongoose.connection.once('open', () => {
 	const server = new ApolloServer({ 
 		schema,

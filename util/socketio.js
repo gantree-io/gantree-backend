@@ -1,4 +1,5 @@
 const io = require('socket.io')();
+const Log = require('@util/logger')
 
 let _socket
 let _rooms = []
@@ -11,19 +12,19 @@ const _init = ({port}) => {
 				_socket = socket
 
 				socket.on('disconnect', () => {
-					console.log(`user disconnected`)
+					Log(`user disconnected`)
 				});
 
 				socket.on('joinroom', room => {
 					socket.join(room);
 					_rooms.push(room)
-					console.log(`room joined ${room}`)
+					Log(`room joined ${room}`)
 				});
 
 				socket.on('leaveroom', room => {
 					socket.leave(room);
 					delete _rooms[room]
-					console.log(`room left ${room}`)
+					Log(`room left ${room}`)
 				});
 
 				resolve(socket)
