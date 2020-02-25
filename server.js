@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTop
 mongoose.connection.once('open', () => {
 	const server = new ApolloServer({ 
 		schema,
-		context: integrationContext => Auth.handleAuth(authWhitelist, integrationContext)
+		context: integrationContext => Auth.handleAuth(authWhitelist, integrationContext),
 	});
 	
 	server.listen(process.env.GRAPHQL_PORT||4000).then(({ url }) => console.log(`🚀 Server ready at ${url}`));
