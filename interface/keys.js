@@ -19,11 +19,11 @@ module.exports = {
 	`,
 	resolvers: {
 	 	Query: {
-	 		keys: async (parent, {}, {user}) => await Key.fetchAll(user.team._id)
+	 		keys: async (parent, {}, {user}) => await Key.fetchAll(user.team_id)
 	 	},
 	 	Mutation: {
-	 		addKey: async (parent, args, {user}) => await Key.add(args, user.team._id),
-	 		deleteKey: async (parent, args, {user}) => await Key.delete(args, user.team._id),
+	 		addKey: async (parent, args, {user}) => await Key.add(args, user.team_id),
+	 		deleteKey: async (parent, args, {user}) => await Key.delete(args, user.team_id),
 	 	}
 	}
 }

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const util = require('./_util');
 
-const schema =  new mongoose.Schema(
+const schema = new mongoose.Schema(
 	{
 		name: {
 			type : String,

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const util = require('./_util');
 
-module.exports = new mongoose.Schema(
+const schema = new mongoose.Schema(
 	{
 		name: {
 			type : String,
@@ -30,9 +30,21 @@ module.exports = new mongoose.Schema(
 			enum: ['VALIDATOR', 'FULL'],
 			required : true,
 			trim: true
-		}
+		},
+		network: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'network',
+			required : true,
+			trim: true,
+			autopopulate: true
+		},
 	},
 	{ 
 		timestamps: util.timestamps
 	}
 )
+
+schema.plugin(require('mongoose-autopopulate'));
+schema.set('toJSON', { virtuals: true })
+
+module.exports = schema

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const util = require('./_util');
 
-module.exports = new mongoose.Schema(
+const schema =new mongoose.Schema(
 	{
 		name: {
 			type : String,
@@ -12,7 +12,18 @@ module.exports = new mongoose.Schema(
 			type : String,
 			required : true,
 			trim: true
-		}
+		},
+		team: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'team',
+			required: true,
+			autopopulate: true
+		},
 	},
 	{ timestamps: util.timestamps }
 )
+
+schema.plugin(require('mongoose-autopopulate'));
+schema.set('toJSON', { virtuals: true })
+
+module.exports = schema

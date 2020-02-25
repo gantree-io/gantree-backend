@@ -1,4 +1,4 @@
-module.exports = [
+const names = [
 	"10 Chalupas",
 	"100 Snoring Elephants",
 	"20 Story Satan",
@@ -4193,3 +4193,7 @@ module.exports = [
 	"Zoot A. Larz",
 	"Zytrex"
 ]
+
+module.exports = {
+	random: () => names[Math.floor(Math.random() * Math.floor(names.length))]
+}

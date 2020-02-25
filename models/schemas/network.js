@@ -21,13 +21,13 @@ const schema = new mongoose.Schema(
 			trim: true,
 			autopopulate: true
 		},
-		nodes: [{
+		team: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'node',
+			ref: 'team',
 			required : true,
-			default: [],
+			trim: true,
 			autopopulate: true
-		}]
+		},
 	},
 	{ 
 		timestamps: util.timestamps 

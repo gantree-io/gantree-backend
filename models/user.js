@@ -41,10 +41,13 @@ User.authByFirebaseToken = async token => {
 		// add team into user
 		await User.findByIdAndUpdate(_user._id, {team: _team._id})
 	}
-	
+
 	return {
 		..._user.toObject(),
-		tokens: Auth.generateTokens(_user.toObject())
+		tokens: Auth.generateTokens({
+			_id: _user._id,
+			team_id: _user.team._id
+		})
 	}
 }
 
