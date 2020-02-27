@@ -22,12 +22,12 @@ module.exports = {
 	`,
 	resolvers: {
 		Query: {
-			networks: async (_, {}, {user}) => Network.fetchAllByTeam(user.team_id),
-			network: async (_, {_id}, {user}) => Network.fetchById(_id, user.team_id)
+			networks: async (_, {}, {user}) => await Network.fetchAllByTeam(user.team._id),
+			network: async (_, {_id}, {user}) => Network.fetchById(_id, user.team._id)
 		},
 		Mutation: {
-			addNetwork: async (_, network, {user}) => await Network.add(network, user.team_id),
-			deleteNetwork: async (_, {_id}, {user}) => await Network.delete(_id, user.team_id) 
+			addNetwork: async (_, network, {user}) => await Network.add(network, user.team._id),
+			deleteNetwork: async (_, {_id}, {user}) => await Network.delete(_id, user.team._id) 
 		}
 	}
 }

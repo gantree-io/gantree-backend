@@ -1,5 +1,6 @@
 const { AuthenticationError } = require('apollo-server');
 const jwt = require('jsonwebtoken');
+const getContext = require('@util/context')
 
 /**
  * Generate a jwt auth token for subsequent calls.
@@ -30,20 +31,25 @@ const generateTokens = async payload => {
 	}
 }
 
-const handleAuth = (whitelist, {req, res}) => {
+const handleAuth = async (whitelist, {req, res}) => {
 	try {
 		const isIntrospectionQuery = null === req.body.operationName || 'IntrospectionQuery' === req.body.operationName
 		const token = req.headers.authorization.split(' ')[1]
 
 		if(token){
-			const user = jwt.verify(token, process.env.SECRET_KEY);
-			if(!user) throw new Error('Token authentication failed');
-			req.user = user
+			const tokenUser = jwt.verify(token, process.env.SECRET_KEY);
+			if(!tokenUser) throw new Error('Authentication error');
+			//req.user = user
+
+			let context = await getContext(tokenUser._id)
+			req.user = context.user
+			req.team = context.team
+
 			return req
 		}else if(whitelist.includes(req.body.operationName) || isIntrospectionQuery){
 			return req
 		}else{
-			throw new Error('Incorrect authentication details'); 
+			throw new Error('Authentication error'); 
 		}
 	} catch(e) {
 		throw new AuthenticationError(e); 

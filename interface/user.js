@@ -22,7 +22,7 @@ module.exports = {
 		}
 
 		extend type Mutation {
-			addUser(email: String!): User!
+			inviteUser(email: String!): User!
 			setName(name: String!): User!
 			deleteUser(_id: String!):  Boolean!
 			resendInvitation(_id: String!): Boolean!
@@ -35,8 +35,8 @@ module.exports = {
 	 		authByFirebaseToken: async (parent, {token}) => await User.authByFirebaseToken(token)
 	 	},
 	 	Mutation: {
-	 		addUser: async (parent, {email}) => await User.add(email),
-	 		setName: async (parent, args, {user}) => await User.setName(args, user),
+	 		inviteUser: async (parent, {email}, {team}) => await User.invite(email, team),
+	 		setName: async (parent, {name}, {user}) => await User.setName(name, user),
 	 		deleteUser: async (parent, {_id}) => await User.delete(_id),
 	 		resendInvitation: async (parent, {_id}) => await User.sendInvitation(_id),
 	 		activateUser: async (parent, {_id}) => await User.setStatus(_id, 'ACTIVE'),

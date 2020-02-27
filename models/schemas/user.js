@@ -22,7 +22,7 @@ const schema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'team',
 			required : true,
-			autopopulate: true
+			autopopulate: { maxDepth: 2 }
 		},
 		status: {
 			type : String,

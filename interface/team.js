@@ -14,15 +14,17 @@ module.exports = {
 		}
 		
 		extend type Mutation {
-			updateName: Team
+			updateName(_id: String!): Team
+			updateOwner(_id: String!): Team
 		}
 	`,
 	resolvers: {
 	 	Query: {
-	 		team: async (parent, args, {user}) => Team.fetch(user.team_id),
+	 		team: async (parent, args, {team}) => await Team.fetch(team._id),
 	 	},
 	 	Mutation: {
-	 		updateName: (parent, {name}, {user}) => Team.updateName(name, user.team_id),
+	 		updateName: async (parent, {name}, {team}) => await Team.updateName(team._id, name),
+	 		updateOwner: async (parent, {_id}, {user, team}) => await Team.updateOwner(team._id, user, _id),
 	 	}
 	}
 }

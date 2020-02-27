@@ -1,17 +1,12 @@
 const mongoose = require('mongoose')
-const nodemailer = require("nodemailer");
-
-// schemas
+const email = require('@util/emailer')
+const Invitation = require('@email/invitation')
 const UserSchema = require('@schemas/user');
-
-// models
-const Team = require('./team')
 const User = mongoose.model('user', UserSchema)
-
-// util
 const Hotwire = require('@util/hotwire')
 const Firebase = require('@util/firebase')
 const Auth = require('@util/auth')
+const { AuthenticationError } = require('apollo-server');
 
 /**
  * Authenticate user by firebase token.
@@ -22,12 +17,14 @@ User.authByFirebaseToken = async token => {
 	const {uid, name, email} = await Firebase.verifyToken(token)
 
 	// check DB for existing account
-	let _user = await User.findOne({'uid': uid})
+	let _user = await User.findOne({'email': email})
+
+	if(_user.status === 'INACTIVE') throw new AuthenticationError('Inactive account'); 
 
 	// if not found: create local account
 	if(!_user){
 		
-		// new user
+		// add user
 		_user = await User.create({
 			name: name,
 			email: email,
@@ -36,10 +33,15 @@ User.authByFirebaseToken = async token => {
 		})
 
 		// new team with owner
-		let _team = await Team.new(_user._id)
+		let _team = await mongoose.models.team.new(_user._id)
 		
 		// add team into user
-		await User.findByIdAndUpdate(_user._id, {team: _team._id})
+		_user = await User.findByIdAndUpdate(_user._id, {team: _team._id})
+	}
+	// if found but without UID then it's an 'invited user'
+	// so add uid
+	else if(!_user.uid){
+		_user = await User.findByIdAndUpdate(_user._id, {uid: uid}, {new: true})
 	}
 
 	return {
@@ -56,10 +58,10 @@ User.authByFirebaseToken = async token => {
  * @param {String} email - the user email address.
  * @returns {User} - the newly created user
  */
-User.add = async email => {
+User.invite = async (email, team) => {
 	let _user = await User.create({
 		email: email, 
-		team: '5e4a53efaa93387adf02a031', 
+		team: team._id, 
 		status: 'INVITATION_SENT'
 	})
 	await User.sendInvitation(_user._id)
@@ -72,8 +74,8 @@ User.add = async email => {
  * @param {String} name - the user name.
  * @returns {User} - the updates user
  */
-User.setName = async (fields, {_id}) => {
-	let user = await User.findByIdAndUpdate(_id, {name: fields.name}, {new: true})
+User.setName = async (name, {_id}) => {
+	let user = await User.findByIdAndUpdate(_id, {name: fields.name, status: 'ACTIVE'}, {new: true})
 	Hotwire.publish(_id, `UPDATE`, user)
 	return user
 }
@@ -100,35 +102,18 @@ User.sendInvitation = async _id => {
 
 	if(_user.status !== 'INVITATION_SENT') throw new Error("Can only send invitations to users who are waiting on them")
 
-	try {
-
- 		let testAccount = await nodemailer.createTestAccount();
- 
- 		let transporter = nodemailer.createTransport({
- 			host: "smtp.ethereal.email",
- 			port: 587,
- 			secure: false,
- 			auth: {
- 				user: testAccount.user,
- 				pass: testAccount.pass 
- 			}
- 		});
- 
- 		let info = await transporter.sendMail({
- 			from: `"${_user.team.owner.name}" <${_user.team.owner.email}>`,
- 			to: _user.email,
- 			subject: "Gantree Invitation", 
- 			text: "Gantree Invitation: http://localhost:5000",
- 			html: `
- 				<b>You've been invited to Gantree</b>
- 				<p>${_user.team.owner.name} from team '${_user.team.name}' has invited you to use gantree.</p>
- 				<p>Click this link to create your account: <a href="http://localhost:5000" target="_blank">http://localhost:5000</a></p>
- 			`
- 		});
- 		console.log(nodemailer.getTestMessageUrl(info))
-	} catch(e) {
-		console.log(e);
-	}
+	// async
+	await email.send(Invitation, {
+		sender: {
+			name: _user.team.owner.name,
+			email: _user.team.owner.email, 
+		},
+		to:  _user.email,
+		vars: {
+			name: _user.team.owner.name,
+			team: _user.team.name
+		}
+	})
 
 	return true
 }

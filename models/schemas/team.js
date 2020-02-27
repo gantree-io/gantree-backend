@@ -12,7 +12,7 @@ const schema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'user',
 			required : true,
-			autopopulate: true
+			autopopulate: { maxDepth: 1 }
 		},
 	},
 	{ 

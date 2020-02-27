@@ -28,6 +28,7 @@
     "@interface": "interface",
     "@models": "models",
     "@schemas": "models/schemas",
-    "@util": "util"
+    "@util": "util",
+    "@email": "email"
   }
 }

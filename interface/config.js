@@ -24,12 +24,12 @@ module.exports = {
 	`,
 	resolvers: {
 	 	Query: {
-	 		configs: async (_, {}, {user}) => await Config.fetchAll(user),
-			config: async (_, {_id}, {user}) => await Config.fetchOne(_id, user)
+	 		configs: async (_, {}, {team}) => await Config.all(team._id),
+			config: async (_, {_id}, {team}) => await Config.byid(_id, team._id),
 	 	},
 	 	Mutation: {
-	 		addConfig: async (_, args, {user}) => await Config.add(args, user),
-	 		deleteConfig: async (_, {_id}, {user}) => await Config.delete(_id, user)
+	 		addConfig: async (_, args, {team}) => await Config.add(args, team._id),
+	 		deleteConfig: async (_, {_id}, {team}) => await Config.delete(_id, team._id)
 	 	}
 	}
 }
