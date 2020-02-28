@@ -41,7 +41,16 @@ User.authByFirebaseToken = async token => {
 	// if found but without UID then it's an 'invited user'
 	// so add uid
 	else if(!_user.uid){
-		_user = await User.findByIdAndUpdate(_user._id, {uid: uid}, {new: true})
+		_user = await User.findByIdAndUpdate(
+			_user._id, 
+			{
+				uid: uid,
+				//name: name
+			}, 
+			{
+				new: true
+			}
+		)
 	}
 
 	return {
@@ -78,6 +87,17 @@ User.setName = async (name, {_id}) => {
 	let user = await User.findByIdAndUpdate(_id, {name: fields.name, status: 'ACTIVE'}, {new: true})
 	Hotwire.publish(_id, `UPDATE`, user)
 	return user
+}
+
+/**
+ * Update users' account (name and subscribed)
+ * @param {String} name - the user name.
+ * @returns {User} - the updates user
+ */
+User.updateAccount = async (name, subscribed, {_id}) => {
+	let user = await User.findByIdAndUpdate(_id, {name: name, subscribed: subscribed}, {new: true})
+	Hotwire.publish(_id, `UPDATE`, user)
+	return true
 }
 
 /**

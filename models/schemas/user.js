@@ -30,6 +30,11 @@ const schema = new mongoose.Schema(
 			trim: true,
 			enum: ['ACTIVE', 'INACTIVE', 'INVITATION_SENT'],
 			default: 'INVITATION_SENT'
+		},
+		subscribed: {
+			type : Boolean,
+			required : true,
+			default: true
 		}
 	},
 	{ 

@@ -15,6 +15,7 @@ module.exports = {
 			team: Team
 			tokens: Tokens
 			status: String
+			subscribed: Boolean
 		}
 
 		extend type Query {
@@ -24,6 +25,7 @@ module.exports = {
 		extend type Mutation {
 			inviteUser(email: String!): User!
 			setName(name: String!): User!
+			updateAccount(name: String! subscribed: Boolean!): Boolean!
 			deleteUser(_id: String!):  Boolean!
 			resendInvitation(_id: String!): Boolean!
 			activateUser(_id: String!): Boolean!
@@ -37,6 +39,7 @@ module.exports = {
 	 	Mutation: {
 	 		inviteUser: async (parent, {email}, {team}) => await User.invite(email, team),
 	 		setName: async (parent, {name}, {user}) => await User.setName(name, user),
+	 		updateAccount: async (parent, {name, subscribed}, {user}) => await User.updateAccount(name, subscribed, user._id),
 	 		deleteUser: async (parent, {_id}) => await User.delete(_id),
 	 		resendInvitation: async (parent, {_id}) => await User.sendInvitation(_id),
 	 		activateUser: async (parent, {_id}) => await User.setStatus(_id, 'ACTIVE'),
