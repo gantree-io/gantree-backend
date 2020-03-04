@@ -1,11 +1,11 @@
 const { gql, makeExecutableSchema } = require('apollo-server');
 const _ = require('lodash');
-const Config = require('./config')
+const Chainspec = require('./chainspec')
 const Network = require('./network')
 const Node = require('./node')
 const User = require('./user')
 const Team = require('./team')
-const Keys = require('./keys')
+const Provider = require('./provider')
 
 const rootDef = gql`
 	type Query {
@@ -20,19 +20,19 @@ const rootDef = gql`
 module.exports = makeExecutableSchema({
 	typeDefs: [
 		rootDef, 
-		Config.typeDef, 
+		Chainspec.typeDef, 
 		Network.typeDef,
 		Node.typeDef,
 		User.typeDef,
 		Team.typeDef,
-		Keys.typeDef,
+		Provider.typeDef,
 	],
 	resolvers: [
-		Config.resolvers,
+		Chainspec.resolvers,
 		Network.resolvers,
 		Node.resolvers,
 		User.resolvers,
 		Team.resolvers,
-		Keys.resolvers,
+		Provider.resolvers,
 	],
 });

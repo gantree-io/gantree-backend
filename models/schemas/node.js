@@ -20,7 +20,7 @@ const schema = new mongoose.Schema(
 		},
 		status: {
 			type : String,
-			enum: ['ONLINE', 'OFFLINE', 'PENDING'],
+			enum: ['ONLINE', 'OFFLINE', 'PENDING', 'SHUTDOWN'],
 			required : true,
 			trim: true,
 			default: 'PENDING'

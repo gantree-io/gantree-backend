@@ -9,17 +9,23 @@ const schema = new mongoose.Schema(
 			required : true,
 			trim: true
 		},
-		repo: {
+		binary_url: {
 			type : String,
 			required : true,
 			trim: true,
 		},
-		config: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'config',
+		binary_name: {
+			type : String,
 			required : true,
 			trim: true,
-			autopopulate: true
+		},
+		chainspec: {
+			type : String,
+			//type: mongoose.Schema.Types.ObjectId,
+			//ref: 'chainspec',
+			required : true,
+			trim: true,
+			//autopopulate: true
 		},
 		team: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -28,6 +34,13 @@ const schema = new mongoose.Schema(
 			trim: true,
 			autopopulate: true
 		},
+		status: {
+			type : String,
+			enum: ['DEPLOYING', 'ONLINE', 'SHUTDOWN'],
+			required : true,
+			trim: true,
+			default: 'DEPLOYING'
+		}
 	},
 	{ 
 		timestamps: util.timestamps 

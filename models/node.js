@@ -6,9 +6,9 @@ const Node = mongoose.model('node', NodeSchema)
 
 Node.fetchByNetwork = async network_id => await Node.find({network: network_id})
 
-Node.add = async (fields, team_id) => await Node.create({...fields, status: 'PENDING'})
+Node.add = async fields => await Node.create({...fields, status: 'PENDING'})
 
-Node.addMultiple = async (count, {network_id, validators, provider}, team_id) => {
+Node.addMultiple = async (count, {network_id, validators, provider}) => {
 	let nodes = []
 
 	for (var i = 0; i < count; i++) {
@@ -18,8 +18,7 @@ Node.addMultiple = async (count, {network_id, validators, provider}, team_id) =>
 				network: network_id,
 				type: validators === true ? 'VALIDATOR' : 'FULL',
 				provider: provider
-			},
-			team_id
+			}
 		)
 		nodes.push(node)
 	}
@@ -27,5 +26,7 @@ Node.addMultiple = async (count, {network_id, validators, provider}, team_id) =>
 	return nodes
 }
 
+// update IP address of node by ID
+Node.updateIpAddress = async (_id, ip) => await Node.findOneAndUpdate({_id: _id}, {ip: ip}, {new: true})
 
 module.exports = Node

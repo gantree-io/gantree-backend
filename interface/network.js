@@ -6,7 +6,7 @@ module.exports = {
 			_id: String!
 			name: String!
 			repo: String!
-			config: Config!
+			chainspec: Chainspec!
 			nodes: [Node]
 		}
 
@@ -16,18 +16,18 @@ module.exports = {
 		}
 
 		extend type Mutation {
-			addNetwork(name: String! count: Int! validators: Boolean! provider: String! repo: String! config: String!): Network!
+			addNetwork(name: String! count: Int! validators: Boolean! provider: String! binary_url: String! binary_name: String! chainspec: String! project_id: String): Network!
 			deleteNetwork(_id: String!): Boolean
 		}
 	`,
 	resolvers: {
 		Query: {
-			networks: async (_, {}, {user}) => await Network.fetchAllByTeam(user.team._id),
-			network: async (_, {_id}, {user}) => Network.fetchById(_id, user.team._id)
+			networks: async (_, {}, {team}) => await Network.fetchAllByTeam(team._id),
+			network: async (_, {_id}, {team}) => await Network.fetchById(_id, team._id)
 		},
 		Mutation: {
-			addNetwork: async (_, network, {user}) => await Network.add(network, user.team._id),
-			deleteNetwork: async (_, {_id}, {user}) => await Network.delete(_id, user.team._id) 
+			addNetwork: async (_, network, {team}) => await Network.add(network, team._id),
+			deleteNetwork: async (_, {_id}, {team}) => await Network.delete(_id, team._id) 
 		}
 	}
 }
