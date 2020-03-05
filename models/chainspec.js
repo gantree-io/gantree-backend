@@ -4,25 +4,29 @@ const Chainspec = mongoose.model('chainspec', ChainspecSchema)
 const Hotwire = require('@util/hotwire')
 const TeamStorage = require('@util/teamstorage')
 
-
-Chainspec.all = async team_id => {
-	// TODO: 
-	// 1. get chainspec file
-	// 2. remove genesis.raw.top key (too large)
-	// 3. add to data
-	////let _aaa = ts.chainspec.get(chainspecPath)
-	//console.log(_aaa, chainspec_filename)
-	return await Chainspec.find({team: team_id})
+const getChainspecWithJson = async (_id, team_id) => {
+	let chainspec = await Chainspec.findOne({_id: _id, team: team_id})
+	let json = new TeamStorage(team_id).chainspec.get(chainspec.file, {asJson: true})
+	return {
+		...chainspec.toObject(),
+		file: json
+	}
 }
 
-Chainspec.byid = async (_id, team_id) => {
-	// TODO: 
-	// 1. get chainspec file
-	// 2. remove genesis.raw.top key (too large)
-	// 3. add to data
-	//let _aaa = ts.chainspec.get(chainspecPath)
-	//console.log(_aaa, chainspec_filename)
-	return await Chainspec.findOne({_id: _id, team: team_id})
+
+Chainspec.all = async team_id =>  await Chainspec.find({team: team_id})
+
+Chainspec.byId = async (_id, full, team_id) => {
+	let chainspec = await getChainspecWithJson(_id, team_id)
+
+	if(full !== true){
+		chainspec.file.genesis.raw.top = "[hidden - download to see full json]"
+	}
+	
+	return {
+		...chainspec,
+		file: JSON.stringify(chainspec.file, null, 4)
+	}
 }
 
 Chainspec.add = async (name, chainspec, team_id) => {

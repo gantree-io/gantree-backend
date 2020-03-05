@@ -39,7 +39,12 @@ class TeamStorage{
 			//return filename
 			return filename
 		},
-		get: name => JSON.parse(fs.readFileSync(`${this.root}/chainspecs/${name}`, 'utf8')),
+		get: (name, {asJson}) => {
+			let content = fs.readFileSync(`${this.root}/chainspecs/${name}`, 'utf8')
+			return asJson === true
+				? JSON.parse(content)
+				: content
+		},
 		delete: name => fs.unlinkSync(`${this.root}/chainspecs/${name}`),
 		path: name =>  `${this.root}/chainspecs/${name}`
 	}
