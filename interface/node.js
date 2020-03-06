@@ -8,7 +8,7 @@ module.exports = {
 			ip: String
 			provider: String
 			status: String
-			type: String
+			validator: Boolean
 		}
 
 		extend type Query {
@@ -17,7 +17,6 @@ module.exports = {
 		}
 
 		extend type Mutation {
-			addNodes(network_id: String! count: Int! validators: Boolean! provider: String!): [Node]!
 			deleteNode(_id: String!): Node!
 		}
 	`,
@@ -27,7 +26,7 @@ module.exports = {
 			nodes: async (_, {network_id}, {user}) => await Node.findAll(network_id, user.team_id),
 		},
 		Mutation: {
-			addNodes: async (parent, {count, ...rest}, {user}) => await Node.addMultiple(count, rest, user.team_id),
+			//addNodes: async (parent, {count, ...rest}, {user}) => await Node.addMultiple(count, rest, user.team_id),
 			deleteNode: async (parent, {_id}, {user}) => await Node.delete(_id, user.team_id),
 		}
 	}

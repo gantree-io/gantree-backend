@@ -203,7 +203,8 @@ const createNetwork = async ({configPath, providerCredentails, sshPrivateKey}) =
 		handleError(error)
 	}
 
-	return result
+	// parse and return IP addresses from result string
+	return JSON.parse(/!!!VALIDATOR_IP_ADDRESSES ==> \[(.*)\]/g.exec(result)[1])
 }
 
 const deleteNetwork = async ({configPath}) => {

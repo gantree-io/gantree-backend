@@ -25,12 +25,18 @@ const schema = new mongoose.Schema(
 			trim: true,
 			default: 'PENDING'
 		},
-		type: {
-			type : String,
-			enum: ['VALIDATOR', 'FULL'],
-			required : true,
-			trim: true
+		validator: {
+			type : Boolean,
+			trim: true,
+			required: true,
+			default: false
 		},
+		// type: {
+		// 	type : String,
+		// 	enum: ['VALIDATOR', 'FULL'],
+		// 	required : true,
+		// 	trim: true
+		// },
 		network: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'network',

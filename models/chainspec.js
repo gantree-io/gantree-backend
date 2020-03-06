@@ -13,8 +13,45 @@ const getChainspecWithJson = async (_id, team_id) => {
 	}
 }
 
+const getNetworkCount = async (_c, team_id) => await mongoose.models.network.countDocuments({chainspec: _c._id, team: team_id})
 
-Chainspec.all = async team_id =>  await Chainspec.find({team: team_id})
+
+
+// const addNetworkCount = async (_p, team_id) => {
+// 	let networks = await mongoose.models.network.fetchAllByTeam(team_id)
+// 	
+// 	let providerNetworks = []
+// 	let providerNodes = []
+// 
+// 	for (var j = 0; j < networks.length; j++) {
+// 		for (var k = 0; k < networks[j].nodes.length; k++) {
+// 			if(networks[j].nodes[k].provider === _p.provider){
+// 				providerNetworks.push(networks[j]._id)
+// 				providerNodes.push(networks[j].nodes[k]._id)
+// 			}
+// 		}
+// 	}
+// 	
+// 	_p.networkCount = [...new Set(providerNetworks)].length
+// 	_p.nodeCount = [...new Set(providerNodes)].length
+// 
+// 
+// 	return _p
+// }
+
+
+Chainspec.all = async (team_id, withCount) => {
+	let chainspecs = await Chainspec.find({team: team_id})
+	
+	//add count if requested
+	if(withCount === true){
+		for (var i = 0; i < chainspecs.length; i++) {
+			chainspecs[i].networkCount = await getNetworkCount(chainspecs[i], team_id)	
+		}
+	}
+
+	return chainspecs
+}
 
 Chainspec.byId = async (_id, full, team_id) => {
 	let chainspec = await getChainspecWithJson(_id, team_id)

@@ -4,14 +4,16 @@ module.exports = {
 	typeDef: `
 		type Provider {
 			_id: String!
-			credentials: String!
 			provider: String!
-			name: String
+			name: String!
 			team: Team!
+			networkCount: Int
+			nodeCount: Int
 		}
 
 		extend type Query {
-			providers: [Provider]!
+			providers(withCount: Boolean): [Provider]!
+			providerCount: Int
 		}
 
 		extend type Mutation {
@@ -23,7 +25,8 @@ module.exports = {
 	`,
 	resolvers: {
 	 	Query: {
-	 		providers: async (parent, {}, {team}) => await Provider.fetchAll(team._id)
+	 		providers: async (parent, {withCount}, {team}) => await Provider.fetchAll(team._id, withCount),
+	 		providerCount: async (parent, {}, {team}) => await Provider.count(team._id)
 	 	},
 	 	Mutation: {
 	 		addProviderAWS: async (parent, {aws_access_key_id, aws_secret_access_key}, {team}) => await Provider.addAWS(aws_access_key_id, aws_secret_access_key, team._id),

@@ -6,7 +6,7 @@ module.exports = {
 			_id: String!
 			name: String!
 			repo: String!
-			chainspec: Chainspec!
+			chainspec: String!
 			nodes: [Node]
 		}
 

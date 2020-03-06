@@ -3,8 +3,50 @@ const ProviderSchema = require('@schemas/provider');
 const Provider = mongoose.model('provider', ProviderSchema)
 const Hotwire = require('@util/hotwire')
 
+// return the network and node count for a given provider
+const addNetworkCount = async (_p, team_id) => {
+	let networks = await mongoose.models.network.fetchAllByTeam(team_id)
+	
+	let providerNetworks = []
+	let providerNodes = []
+
+	for (var j = 0; j < networks.length; j++) {
+		for (var k = 0; k < networks[j].nodes.length; k++) {
+			if(networks[j].nodes[k].provider === _p.provider){
+				providerNetworks.push(networks[j]._id)
+				providerNodes.push(networks[j].nodes[k]._id)
+			}
+		}
+	}
+	
+	_p.networkCount = [...new Set(providerNetworks)].length
+	_p.nodeCount = [...new Set(providerNodes)].length
+
+
+	return _p
+}
+
 // add a new network
-Provider.fetchAll = async team_id => await Provider.find({team: team_id})
+Provider.fetchAll = async (team_id, withCount) => {
+	let providers = await Provider.find({team: team_id})
+
+	// add count if requested
+	if(withCount === true){
+		for (var i = 0; i < providers.length; i++) {
+			providers[i] = addNetworkCount(providers[i], team_id)
+		}
+	}
+	
+	//  add network/node counts if requested
+	// providers = withCount === true
+	// 	? await addNetworkCount(providers, team_id)
+	// 	: providers
+
+	return providers
+}
+
+// count the number of providers
+Provider.count = async team_id => await Provider.countDocuments({team: team_id})
 
 // add credentials
 Provider.add = async (provider, name, credentials, team_id) => {

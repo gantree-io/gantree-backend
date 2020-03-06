@@ -6,22 +6,41 @@ const Node = mongoose.model('node', NodeSchema)
 
 Node.fetchByNetwork = async network_id => await Node.find({network: network_id})
 
-Node.add = async fields => await Node.create({...fields, status: 'PENDING'})
+// Node.add = async ({name, provider, ip, status='PENDING', validator=false, network}) => await Node.create({
+// 	status: 'PENDING', 
+// 	name: name,
+// 	provider: provider,
+// 	ip: ip,
+// 	status: status,
+// 	validator: validator,
+// 	network: network,
+// })
 
-Node.addMultiple = async (count, {network_id, validators, provider}) => {
-	let nodes = []
+Node.addMultiple = async (count, {network_id, validator, provider, status='PENDING'}) => {
+	let items = Array.apply(null, Array(count)).map((_, i) => ({
+		name: `node-${i}`,
+		network: network_id,
+		validator: validator,
+		provider: provider,
+		status: status
+	}))
 
-	for (var i = 0; i < count; i++) {
-		let node = await Node.add(
-			{
-				name: `node-${i}`,
-				network: network_id,
-				type: validators === true ? 'VALIDATOR' : 'FULL',
-				provider: provider
-			}
-		)
-		nodes.push(node)
-	}
+	let nodes = await Node.insertMany(items)
+	
+	//console.log(nodes)
+
+
+	// for (var i = 0; i < count; i++) {
+	// 	let node = await Node.add(
+	// 		{
+	// 			name: `node-${i}`,
+	// 			network: network_id,
+	// 			type: validators === true ? 'VALIDATOR' : 'FULL',
+	// 			provider: provider
+	// 		}
+	// 	)
+	// 	nodes.push(node)
+	// }
 
 	return nodes
 }

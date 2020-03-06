@@ -28,15 +28,14 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 	})
 	
 	// add nodes to DB
-	Node.addMultiple(
+	let nodes = Node.addMultiple(
 		count, 
 		{
 			network_id: network._id, 
-			validators: validators, 
+			validator: validators, 
 			provider: creds.provider
 		}
 	)
-
 
 
 	//////////////////////////////////////////
@@ -83,15 +82,32 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 		// save the config file
 		let configPath = ts_network.addConfig(config.json)
 		
+		// trigger gantree 
 		Gantree.createNetwork({
 			configpath: configPath,
 			providerCredentails: JSON.parse(creds.credentials), 
 			sshPrivateKey: privateKey 
-		}).then(async result => {
-			// parse addresses
-			let ip_addresses = JSON.parse(/!!!VALIDATOR_IP_ADDRESSES ==> \[(.*)\]/g.exec(result)[1])
-			// add IP addresses to all network nodes
-			await Network.addNodeIpAddresses(network._id, ip_addresses, team_id)
+		})
+		// return IP addresses on completion
+		.then(async ips => {
+			// add IP addresses to network nodes
+			// should match count
+			// may run into issues when user has ability to
+			// provision validator and non-validator nodes
+			// together, as need to know which is which 
+			//let nodes = await Node.find({network: network._id})
+			for (var i = 0; i < nodes.length; i++) {
+				await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: ips[i], status: 'ONLINE'}, {new: true})
+				Hotwire.publish(nodes[i]._id, 'UPDATE')
+			}
+			
+			// publish an update
+			Hotwire.publish(network._id, 'UPDATE')
+
+			// TODO: listen for node online status and update
+			// need to create a taskrunner, listener type system
+			// to listen to nodes and wait until they're online
+			
 		}).catch(e => {
 		 	console.log(e.message)
 		})
@@ -103,18 +119,6 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 	Hotwire.publish('NETWORK', 'ADD')
 
 	return network
-}
-
-Network.addNodeIpAddresses = async (_id, ips, team_id) => {
-	let nodes = await Node.find({network: _id})
-
-	// TODO: handle when node count !== address count...
-
-	for (var i = 0; i < nodes.length; i++) {
-		await Node.updateIpAddress(nodes[i]._id, ips[i])
-	}
-	
-	return await Node.find({network: _id})
 }
 
 Network.delete = async (_id, team_id) => {
