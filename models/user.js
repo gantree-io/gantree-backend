@@ -36,7 +36,7 @@ User.authByFirebaseToken = async token => {
 		let _team = await mongoose.models.team.new(_user._id)
 		
 		// add team into user
-		_user = await User.findByIdAndUpdate(_user._id, {team: _team._id})
+		_user = await User.findByIdAndUpdate(_user._id, {team: _team._id}, { new: true })
 	}
 	// if found but without UID then it's an 'invited user'
 	// so add uid
@@ -52,6 +52,8 @@ User.authByFirebaseToken = async token => {
 			}
 		)
 	}
+
+	Hotwire.setTeam(_user.team._id)
 
 	return {
 		..._user.toObject(),

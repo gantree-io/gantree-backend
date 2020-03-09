@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const socket = require('@util/socketio')
+const Hotwire = require('@util/hotwire')
 const util = require('./_util');
 
 const schema = new mongoose.Schema(
@@ -51,25 +51,29 @@ schema.plugin(require('mongoose-autopopulate'));
 schema.set('toJSON', { virtuals: true })
 
 // testing random status updates
+let found = false
 schema.post('find', function(docs) {
+ 	const randomNodeValues = () => ({
+		nodes: {
+			online: Math.floor(Math.random() * Math.floor(5)),
+			pending: Math.floor(Math.random() * Math.floor(5)),
+			offline: Math.floor(Math.random() * Math.floor(5))
+		}
+ 	})
 
-// 	const sendUpdate = room => {
-// 		room.emit('NODESTATUS', {
-// 			nodes: {
-// 				online: Math.floor(Math.random() * Math.floor(5)),
-// 				pending: Math.floor(Math.random() * Math.floor(5)),
-// 				offline: Math.floor(Math.random() * Math.floor(5))
-// 			}
-// 		});
-// 	}
-// 
-// 	docs.map(doc => {
-// 		let interval
-// 		clearInterval(interval)
-// 		const room = socket.rooms.use(doc._id)
-// 		sendUpdate(room)
-// 		interval = setInterval(() => sendUpdate(room), Math.floor(Math.random() * Math.floor(5000)) + 1000)
-// 	})
+ 	if(!found){
+ 		found = true
+	 	docs.map(doc => {
+	 		let interval
+	 		clearInterval(interval)
+			
+			Hotwire.publish(doc._id, 'NODESTATUS', randomNodeValues())
+
+	 		interval = setInterval(() => {
+	 			Hotwire.publish(doc._id, 'NODESTATUS', randomNodeValues())
+	 		}, Math.floor(Math.random() * Math.floor(5000)) + 1000)
+	 	})
+	 }
 });
 
 module.exports = schema

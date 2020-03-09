@@ -7,7 +7,7 @@ const User = require('./user')
 const Team = require('./team')
 const Provider = require('./provider')
 
-const rootDef = gql`
+const rootTypeDef = gql`
 	type Query {
 		root: String
 	}
@@ -15,11 +15,21 @@ const rootDef = gql`
 	type Mutation {
 		root: String
 	}
+
+	extend type Query {
+		ping: Boolean,
+	}
 `;
+
+const rootResolvers = {
+ 	Query: {
+ 		ping: async () => true,
+ 	}
+}
 
 module.exports = makeExecutableSchema({
 	typeDefs: [
-		rootDef, 
+		rootTypeDef, 
 		Chainspec.typeDef, 
 		Network.typeDef,
 		Node.typeDef,
@@ -28,6 +38,7 @@ module.exports = makeExecutableSchema({
 		Provider.typeDef,
 	],
 	resolvers: [
+		rootResolvers,
 		Chainspec.resolvers,
 		Network.resolvers,
 		Node.resolvers,
