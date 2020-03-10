@@ -3,6 +3,35 @@ const del = require('del')
 const md5 = require('md5')
 const { generateKeyPairSync } = require('crypto');
 
+const createDir = dir => {
+	if (!fs.existsSync(dir)){
+	    fs.mkdirSync(dir, { recursive: true });
+	}
+}
+
+/*
+	TeamStorage ----
+	TeamStorage allows for programatic creation, access and removal of local 
+	files (chainspecs, network configs & keys) relating to a particular team, 
+	based on folder structure
+	
+	examples: 
+
+	- init a new TS instance
+	let ts = new TeamStorage(team_id)
+	
+	- set a chainspec & return filename
+	let chainspec_filename = ts.chainspec.set(name, content)
+
+	- use a network
+	let network = ts.useNetwork(network_id)
+
+	- generate network keys
+	let keys = network.generateKeys()
+
+	- add a config & return path
+	let config_path = network.addConfig(config)
+*/
 class TeamStorage{
 	
 	constructor(team_id){
@@ -10,21 +39,15 @@ class TeamStorage{
 		// define the storage root path
 		this.root = `${process.env.TEAMSTORAGE_ROOT||'.'}/_teamfiles/${team_id}`
 		// create root dir if !exist
-		this.createDir(this.root)
+		createDir(this.root)
 		return this
 	}
 
-	createDir(dir){
-		if (!fs.existsSync(dir)){
-		    fs.mkdirSync(dir, { recursive: true });
-		}
-	}
-	
 	chainspec = {
 		set: ({name, content}) => {
 			// make sure we have a chainspecs dir for this team
 			let dir = `${this.root}/chainspecs`
-			this.createDir(dir)
+			createDir(dir)
 
 			// set filename/path
 			let filename = `${name}.json`
@@ -59,7 +82,7 @@ class TeamStorage{
 		const config_path = `${dir}/config.json`
 		
 		// create network dir if none exists
-		this.createDir(dir)
+		createDir(dir)
 
 		return {
 			// generate a key-pair for this network
@@ -104,18 +127,6 @@ class TeamStorage{
 			},
 			delete: () => del.sync(dir, {force: true}),
 			configPath: () => config_path
-		}
-	}
-
-	config = {
-		set: (network_id, content) => {
-			console.log(111)
-		},
-		get: (network_id) => {
-			console.log(222)
-		},
-		delete: (network_id) => {
-			console.log(333)
 		}
 	}
 }

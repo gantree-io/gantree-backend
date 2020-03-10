@@ -39,7 +39,8 @@ const init = ({port}) => {
 const setTeam = team => _team = team
 
 const publish = (room, event, data=null) => {
-	io.to(`${_team}.${room}`).emit(`${room}.${event}`, data)
+	let _e = `${_team}.${room}.${event}`
+	io.to(_e).emit(_e, data)
 }
 
 module.exports = {

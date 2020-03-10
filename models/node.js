@@ -25,24 +25,7 @@ Node.addMultiple = async (count, {network_id, validator, provider, status='PENDI
 		status: status
 	}))
 
-	let nodes = await Node.insertMany(items)
-	
-	//console.log(nodes)
-
-
-	// for (var i = 0; i < count; i++) {
-	// 	let node = await Node.add(
-	// 		{
-	// 			name: `node-${i}`,
-	// 			network: network_id,
-	// 			type: validators === true ? 'VALIDATOR' : 'FULL',
-	// 			provider: provider
-	// 		}
-	// 	)
-	// 	nodes.push(node)
-	// }
-
-	return nodes
+	return await Node.insertMany(items)
 }
 
 // update IP address of node by ID

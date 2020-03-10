@@ -5,9 +5,12 @@ module.exports = {
 		type Network {
 			_id: String!
 			name: String!
-			repo: String!
+			status: String!
+			binary_url: String!
+			binary_name: String!
 			chainspec: String!
 			nodes: [Node]
+			team: Team!
 		}
 
 		extend type Query {

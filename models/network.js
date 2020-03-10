@@ -28,7 +28,7 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 	})
 	
 	// add nodes to DB
-	let nodes = Node.addMultiple(
+	let nodes = await Node.addMultiple(
 		count, 
 		{
 			network_id: network._id, 
@@ -42,7 +42,6 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 	// build config, store chainspec, 
 	// create ssh keys && deploy network
 	//////////////////////////////////////////
-
 	try {
 		// create a new config
 		let config = new Gantree.config(network._id)
@@ -91,23 +90,21 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 		// return IP addresses on completion
 		.then(async ips => {
 			// add IP addresses to network nodes
-			// should match count
+			// IP count should match node count
 			// may run into issues when user has ability to
 			// provision validator and non-validator nodes
 			// together, as need to know which is which 
-			//let nodes = await Node.find({network: network._id})
+
 			for (var i = 0; i < nodes.length; i++) {
-				await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: ips[i], status: 'ONLINE'}, {new: true})
-				Hotwire.publish(nodes[i]._id, 'UPDATE')
+				// update node & publish
+				let node = await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: ips[i], status: 'ONLINE'}, {new: true})
+				Hotwire.publish(nodes[i]._id, 'UPDATE', node)
 			}
 			
-			// publish an update
-			Hotwire.publish(network._id, 'UPDATE')
-
-			// TODO: listen for node online status and update
-			// need to create a taskrunner, listener type system
-			// to listen to nodes and wait until they're online
-			
+			// update network & publish
+			await Network.findByIdAndUpdate(network._id, {status: 'ONLINE'})
+			let _network = await Network.fetchById(network._id, team_id)
+			Hotwire.publish(network._id, 'UPDATE', _network)
 		}).catch(e => {
 		 	console.log(e.message)
 		})
@@ -130,7 +127,7 @@ Network.delete = async (_id, team_id) => {
 	let configPath = ts_network.configPath()
 		
 	// set network & nodes to SHUTDOWN status
-	await Network.findByIdAndUpdate(_id, {status: 'SHUTDOWN'})
+	let network = await Network.findByIdAndUpdate(_id, {status: 'SHUTDOWN'}, {new: true})
 	await Node.updateMany({network: _id}, {status: 'SHUTDOWN'})
 	
 	// async delete network via gantree
@@ -144,7 +141,7 @@ Network.delete = async (_id, team_id) => {
 	})
 
 	// boom ====> - - -  pew pew
-	Hotwire.publish('NETWORK', 'UPDATE')
+	Hotwire.publish(_id, 'UPDATE', network)
 
 	return true
 }

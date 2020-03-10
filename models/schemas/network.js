@@ -55,6 +55,7 @@ let found = false
 schema.post('find', function(docs) {
  	const randomNodeValues = () => ({
 		nodes: {
+			total: Math.floor(Math.random() * Math.floor(15)),
 			online: Math.floor(Math.random() * Math.floor(5)),
 			pending: Math.floor(Math.random() * Math.floor(5)),
 			offline: Math.floor(Math.random() * Math.floor(5))
