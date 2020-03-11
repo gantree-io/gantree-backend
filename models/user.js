@@ -19,8 +19,6 @@ User.authByFirebaseToken = async token => {
 	// check DB for existing account
 	let _user = await User.findOne({'email': email})
 
-	if(_user.status === 'INACTIVE') throw new AuthenticationError('Inactive account'); 
-
 	// if not found: create local account
 	if(!_user){
 		
@@ -52,6 +50,8 @@ User.authByFirebaseToken = async token => {
 			}
 		)
 	}
+
+	if(_user.status === 'INACTIVE') throw new AuthenticationError('Inactive account'); 
 
 	Hotwire.setTeam(_user.team._id)
 
