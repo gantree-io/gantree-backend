@@ -3,17 +3,30 @@ const nodemailer = require("nodemailer");
 // TODO: this needs to bo hooked up to a delivery service
 // currently in test mode
 
+const EMAILER_ENV = process.env.EMAILER_ENV
+const EMAILER_HOST = process.env.EMAILER_HOST
+const EMAILER_PORT = process.env.EMAILER_PORT
+const EMAILER_SECURE = process.env.EMAILER_SECURE
+let EMAILER_ACC_USER = process.env.EMAILER_ACC_USER
+let EMAILER_ACC_PASS = process.env.EMAILER_ACC_PASS
+
 const send = async (template, {sender, to, vars}) => {
 	try {
-		let testAccount = await nodemailer.createTestAccount();
+		
+		// testing
+		if(EMAILER_ENV === 'ethereal' || EMAILER_ENV !== 'prod'){
+			let acc = await nodemailer.createTestAccount();
+			EMAILER_ACC_USER = acc.user
+			EMAILER_ACC_PASS = acc.pass 
+		}
 
 		let transporter = nodemailer.createTransport({
-			host: "smtp.ethereal.email",
-			port: 587,
-			secure: false,
+			host: EMAILER_HOST,
+			port: EMAILER_PORT,
+			secure: EMAILER_SECURE === 'true',
 			auth: {
-				user: testAccount.user,
-				pass: testAccount.pass 
+				user: EMAILER_ACC_USER,
+				pass: EMAILER_ACC_PASS 
 			}
 		});
 

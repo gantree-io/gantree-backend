@@ -8,14 +8,14 @@ module.exports = {
 		}
 
 		type User {
-			_id: String
+			_id: String!
 			name: String
 			email: String
 			uid: String
 			team: Team
 			tokens: Tokens
-			status: String
-			subscribed: Boolean
+			status: String!
+			subscribed: Boolean!
 		}
 
 		extend type Query {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const email = require('@util/emailer')
+const Emailer = require('@util/emailer')
 const Invitation = require('@email/invitation')
 const UserSchema = require('@schemas/user');
 const User = mongoose.model('user', UserSchema)
@@ -86,7 +86,7 @@ User.invite = async (email, team) => {
  * @returns {User} - the updates user
  */
 User.setName = async (name, {_id}) => {
-	let user = await User.findByIdAndUpdate(_id, {name: fields.name, status: 'ACTIVE'}, {new: true})
+	let user = await User.findByIdAndUpdate(_id, {name: name, status: 'ACTIVE'}, {new: true})
 	Hotwire.publish(_id, `UPDATE`, user)
 	return user
 }
@@ -125,7 +125,7 @@ User.sendInvitation = async _id => {
 	if(_user.status !== 'INVITATION_SENT') throw new Error("Can only send invitations to users who are waiting on them")
 
 	// async
-	await email.send(Invitation, {
+	await Emailer.send(Invitation, {
 		sender: {
 			name: _user.team.owner.name,
 			email: _user.team.owner.email, 
