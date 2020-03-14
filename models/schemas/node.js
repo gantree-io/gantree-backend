@@ -20,10 +20,10 @@ const schema = new mongoose.Schema(
 		},
 		status: {
 			type : String,
-			enum: ['ONLINE', 'OFFLINE', 'PENDING', 'SHUTDOWN'],
+			enum: ['DEPLOYING', 'ONLINE', 'SHUTDOWN', 'ERROR'],
 			required : true,
 			trim: true,
-			default: 'PENDING'
+			default: 'DEPLOYING'
 		},
 		validator: {
 			type : Boolean,

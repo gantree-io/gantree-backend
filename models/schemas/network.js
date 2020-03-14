@@ -36,7 +36,7 @@ const schema = new mongoose.Schema(
 		},
 		status: {
 			type : String,
-			enum: ['DEPLOYING', 'ONLINE', 'SHUTDOWN'],
+			enum: ['DEPLOYING', 'ONLINE', 'SHUTDOWN', "ERROR"],
 			required : true,
 			trim: true,
 			default: 'DEPLOYING'
@@ -49,32 +49,5 @@ const schema = new mongoose.Schema(
 
 schema.plugin(require('mongoose-autopopulate'));
 schema.set('toJSON', { virtuals: true })
-
-// testing random status updates
-let found = false
-schema.post('find', function(docs) {
- 	const randomNodeValues = () => ({
-		nodes: {
-			total: Math.floor(Math.random() * Math.floor(15)),
-			online: Math.floor(Math.random() * Math.floor(5)),
-			pending: Math.floor(Math.random() * Math.floor(5)),
-			offline: Math.floor(Math.random() * Math.floor(5))
-		}
- 	})
-
- 	if(!found){
- 		found = true
-	 	docs.map(doc => {
-	 		let interval
-	 		clearInterval(interval)
-			
-			Hotwire.publish(doc._id, 'NODESTATUS', randomNodeValues())
-
-	 		interval = setInterval(() => {
-	 			Hotwire.publish(doc._id, 'NODESTATUS', randomNodeValues())
-	 		}, Math.floor(Math.random() * Math.floor(5000)) + 1000)
-	 	})
-	 }
-});
 
 module.exports = schema

@@ -16,7 +16,7 @@ Node.fetchByNetwork = async network_id => await Node.find({network: network_id})
 // 	network: network,
 // })
 
-Node.addMultiple = async (count, {network_id, validator, provider, status='PENDING'}) => {
+Node.addMultiple = async (count, {network_id, validator, provider, status='DEPLOYING'}) => {
 	let items = Array.apply(null, Array(count)).map((_, i) => ({
 		name: `node-${i}`,
 		network: network_id,

@@ -149,6 +149,11 @@ Network.delete = async (_id, team_id) => {
 Network.fetchById  = async (_id, team_id) => {
 	const network = await Network.findOne({_id: _id, team: team_id})
 	const nodes = await Node.fetchByNetwork(network._id)
+
+	// TODO -------
+	// ping all nodes and check status...?
+	// if we find a non responsive node, ser it to error in the database
+
 	return {
 		...network.toObject(),
 		nodes: nodes
