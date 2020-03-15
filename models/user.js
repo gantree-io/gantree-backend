@@ -69,13 +69,13 @@ User.authByFirebaseToken = async token => {
  * @param {String} email - the user email address.
  * @returns {User} - the newly created user
  */
-User.invite = async (email, team) => {
+User.invite = async (email, team, authUser) => {
 	let _user = await User.create({
 		email: email, 
 		team: team._id, 
 		status: 'INVITATION_SENT'
 	})
-	await User.sendInvitation(_user._id)
+	await User.sendInvitation(_user._id, authUser)
 	Hotwire.publish('USER', 'ADD', _user)
 	return _user
 }
@@ -119,13 +119,19 @@ User.setStatus = async (_id, status) => {
  * @param {String} _id - the user mongoose ID.
  * @returns {Boolean}
  */
-User.sendInvitation = async _id => {
-	let _user = await User.findById(_id)
+User.sendInvitation = async (_id, authUser) => {
+	let _user = await User.findOne({_id: _id, team: authUser.team._id})
 
-	if(_user.status !== 'INVITATION_SENT') throw new Error("Can only send invitations to users who are waiting on them")
+	if(
+		!authUser.isTeamOwner() ||
+		!_user ||
+		_user.status !== 'INVITATION_SENT'
+	){
+		throw new Error("You cannot perform this operation")
+	}
 
 	// async
-	await Emailer.send(Invitation, {
+	Emailer.send(Invitation, {
 		sender: {
 			name: _user.team.owner.name,
 			email: _user.team.owner.email, 
@@ -145,10 +151,19 @@ User.sendInvitation = async _id => {
  * @param {String} _id - the user mongoose ID.
  * @returns {Boolean}
  */
-User.delete = async _id => {
-	// TODO test auth levels
+User.delete = async (_id, user) => {
+	// find user to delete
+	let userToDelete = await User.findOne({_id: _id, team: user.team._id})
+
+	// permission to delete?
+	if(!userToDelete || !user.isTeamOwner()) throw new Error('You do not have permission to delete this user')
+
+	//delete!
 	await User.findByIdAndDelete(_id)
+
+	//publish
 	Hotwire.publish('USER', 'DELETE')
+
 	return true
 }
 

@@ -1,6 +1,9 @@
-module.exports = ({team, name}) => ({
+module.exports = ({name, team}) => ({
 	subject: `You're now the team owner for ${team}`,
-	text: "Gantree Team Owner...",
+	text: `
+		${name} from team '${team}' has nominated you as the new team owner.
+		You may have to logout and in again to receive your full prevledges.
+	`,
 	html: `
 		<b>You're now the new team owner for ${team}.</b>
 		<p>${name} from team '${team}' has nominated you as the new team owner.</p>

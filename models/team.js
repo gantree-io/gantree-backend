@@ -4,7 +4,7 @@ const Team = mongoose.model('team', TeamSchema)
 const User = require('./user')
 const Hotwire = require('@util/hotwire')
 const Names = require('@util/names')
-const email = require('@util/emailer')
+const Emailer = require('@util/emailer')
 const NewTeamOwner = require('@email/new_team_owner')
 
 Team.new = async (owner_id) => await Team.create({name: Names.random(), owner: owner_id})
@@ -21,26 +21,28 @@ Team.fetch = async _id => {
 Team.updateName = async (_id, new_name) => {
 	const team = await Team.findByIdAndUpdate(_id, {name: new_name}, {new: true})
 	Hotwire.publish('TEAM', 'UPDATE')
-	return team
+	return true
 }
 
 Team.updateOwner = async (_id, owner, new_owner_id) => {
 	const team = await Team.findOneAndUpdate({_id: _id, owner: owner._id}, {owner: new_owner_id}, {new: true})
+	//const team = await Team.findOne({_id: _id, owner: owner._id})
 	Hotwire.publish('TEAM', 'UPDATE')
+
+	let newOwner = await User.findById(new_owner_id)
 	
 	// send email to new owner
-	email.send(NewTeamOwner, {
+	Emailer.send(NewTeamOwner, {
 		sender: {
 			name: owner.name,
 			email: owner.email, 
 		},
-		to:  _user.email,
+		to:  newOwner.email,
 		vars: {
 			name: owner.name,
 			team: team.name
 		}
 	})
-
 	return team
 }
 

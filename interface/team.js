@@ -14,7 +14,7 @@ module.exports = {
 		}
 		
 		extend type Mutation {
-			updateName(_id: String!): Team
+			updateName(name: String!): Boolean
 			updateOwner(_id: String!): Team
 		}
 	`,

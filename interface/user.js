@@ -37,11 +37,11 @@ module.exports = {
 	 		authByFirebaseToken: async (parent, {token}) => await User.authByFirebaseToken(token)
 	 	},
 	 	Mutation: {
-	 		inviteUser: async (parent, {email}, {team}) => await User.invite(email, team),
+	 		inviteUser: async (parent, {email}, {team, user}) => await User.invite(email, team, user),
 	 		setName: async (parent, {name}, {user}) => await User.setName(name, user),
 	 		updateAccount: async (parent, {name, subscribed}, {user}) => await User.updateAccount(name, subscribed, user._id),
-	 		deleteUser: async (parent, {_id}) => await User.delete(_id),
-	 		resendInvitation: async (parent, {_id}) => await User.sendInvitation(_id),
+	 		deleteUser: async (parent, {_id}, {user}) => await User.delete(_id, user),
+	 		resendInvitation: async (parent, {_id}, {user}) => await User.sendInvitation(_id, user),
 	 		activateUser: async (parent, {_id}) => await User.setStatus(_id, 'ACTIVE'),
 	 		deactivateUser: async (parent, {_id}) => await User.setStatus(_id, 'INACTIVE'),
 	 	}

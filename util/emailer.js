@@ -1,8 +1,5 @@
 const nodemailer = require("nodemailer");
 
-// TODO: this needs to bo hooked up to a delivery service
-// currently in test mode
-
 const EMAILER_ENV = process.env.EMAILER_ENV
 const EMAILER_HOST = process.env.EMAILER_HOST
 const EMAILER_PORT = process.env.EMAILER_PORT
@@ -10,7 +7,7 @@ const EMAILER_SECURE = process.env.EMAILER_SECURE
 let EMAILER_ACC_USER = process.env.EMAILER_ACC_USER
 let EMAILER_ACC_PASS = process.env.EMAILER_ACC_PASS
 
-const send = async (template, {sender, to, vars}) => {
+const send = async (template, {sender, to, vars}, onSuccess=()=>{}, onFailure=()=>{}) => {
 	try {
 		
 		// testing
@@ -38,9 +35,13 @@ const send = async (template, {sender, to, vars}) => {
 			..._template
 		});
 
-		console.log(nodemailer.getTestMessageUrl(info))
+		if(EMAILER_ENV === 'ethereal'){
+			console.log(nodemailer.getTestMessageUrl(info))
+		}
+
+		onSuccess(info)
 	} catch(e) {
-		console.log(e);
+		onFailure(e.message)
 		return false
 	}
 
