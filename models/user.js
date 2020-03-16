@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
+const _ = require('lodash');
 const Emailer = require('@util/emailer')
 const Invitation = require('@email/invitation')
+const Verification = require('@email/verification')
 const UserSchema = require('@schemas/user');
 const User = mongoose.model('user', UserSchema)
 const Hotwire = require('@util/hotwire')
@@ -14,20 +16,30 @@ const { AuthenticationError } = require('apollo-server');
  * @returns {User} - user + auth tokens
  */
 User.authByFirebaseToken = async token => {
-	const {uid, name, email} = await Firebase.verifyToken(token)
+	const {uid, name, email, ...rest} = await Firebase.verifyToken(token)
 
 	// check DB for existing account
 	let _user = await User.findOne({'email': email})
 
-	// if not found: create local account
+	// if not found: create local account & team
 	if(!_user){
+
+		let status = 'ACTIVE'
+		let verificationCode = null
+
+		// if user signed up with password.... 
+		if(_.get(rest, 'firebase.sign_in_provider') === 'password'){
+			status = 'UNVERIFIED'
+			verificationCode = Math.ceil(Math.random() * (999999 - 100000) + 100000)
+		}
 		
 		// add user
 		_user = await User.create({
 			name: name,
 			email: email,
 			uid: uid,
-			status: 'ACTIVE'
+			status: status,
+			verificationCode: verificationCode
 		})
 
 		// new team with owner
@@ -35,6 +47,22 @@ User.authByFirebaseToken = async token => {
 		
 		// add team into user
 		_user = await User.findByIdAndUpdate(_user._id, {team: _team._id}, { new: true })
+
+
+		if(status === 'UNVERIFIED'){
+			// send verification email
+			Emailer.send(Verification, {
+				sender: {
+					name: 'Gantree Admin',
+					email: process.env.EMAILER_ACC_USER, 
+				},
+				to:  _user.email,
+				vars: {
+					code: verificationCode,
+				},
+				onFailure: msg =>  console.log(msg)
+			})
+		}
 	}
 	// if found but without UID then it's an 'invited user'
 	// so add uid
@@ -77,6 +105,25 @@ User.invite = async (email, team, authUser) => {
 	})
 	await User.sendInvitation(_user._id, authUser)
 	Hotwire.publish('USER', 'ADD', _user)
+	return _user
+}
+
+User.verifyAccount = async (verificationCode, user) => {
+	let _user = await User.findOneAndUpdate(
+		{
+			_id: user._id, 
+			verificationCode: verificationCode
+		}, 
+		{
+			verificationCode: null, 
+			status: 'ACTIVE'
+		}, {
+			new: true
+		}
+	)
+
+	if(!_user) throw new Error("Incorrect verification code")
+
 	return _user
 }
 

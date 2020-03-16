@@ -7,7 +7,7 @@ const EMAILER_SECURE = process.env.EMAILER_SECURE
 let EMAILER_ACC_USER = process.env.EMAILER_ACC_USER
 let EMAILER_ACC_PASS = process.env.EMAILER_ACC_PASS
 
-const send = async (template, {sender, to, vars}, onSuccess=()=>{}, onFailure=()=>{}) => {
+const send = async (template, {sender, to, vars, onSuccess=()=>{}, onFailure=()=>{}}) => {
 	try {
 		
 		// testing

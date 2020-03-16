@@ -16,10 +16,12 @@ module.exports = {
 			tokens: Tokens
 			status: String!
 			subscribed: Boolean!
+			verificationCode: String
 		}
 
 		extend type Query {
 			authByFirebaseToken(token: String!): User
+			verifyAccount(verificationCode: Int): User!
 		}
 
 		extend type Mutation {
@@ -34,7 +36,8 @@ module.exports = {
 	`,
 	resolvers: {
 	 	Query: {
-	 		authByFirebaseToken: async (parent, {token}) => await User.authByFirebaseToken(token)
+	 		authByFirebaseToken: async (parent, {token}) => await User.authByFirebaseToken(token),
+	 		verifyAccount: async (parent, {verificationCode}, {user}) => User.verifyAccount(verificationCode, user)
 	 	},
 	 	Mutation: {
 	 		inviteUser: async (parent, {email}, {team, user}) => await User.invite(email, team, user),
@@ -44,6 +47,7 @@ module.exports = {
 	 		resendInvitation: async (parent, {_id}, {user}) => await User.sendInvitation(_id, user),
 	 		activateUser: async (parent, {_id}) => await User.setStatus(_id, 'ACTIVE'),
 	 		deactivateUser: async (parent, {_id}) => await User.setStatus(_id, 'INACTIVE'),
+	 		
 	 	}
 	}
 }

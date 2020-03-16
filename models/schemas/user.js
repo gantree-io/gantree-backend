@@ -28,13 +28,18 @@ const schema = new mongoose.Schema(
 			type : String,
 			required : true,
 			trim: true,
-			enum: ['ACTIVE', 'INACTIVE', 'INVITATION_SENT'],
-			default: 'INVITATION_SENT'
+			enum: ['ACTIVE', 'INACTIVE', 'INVITATION_SENT', 'UNVERIFIED'],
+			default: 'UNVERIFIED'
 		},
 		subscribed: {
 			type : Boolean,
 			required : true,
 			default: true
+		},
+		verificationCode: {
+			type: Number,
+			min: 100000,
+			max: 999999
 		}
 	},
 	{ 

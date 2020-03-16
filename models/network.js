@@ -83,7 +83,7 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 		
 		// trigger gantree 
 		Gantree.createNetwork({
-			configpath: configPath,
+			configPath: configPath,
 			providerCredentails: JSON.parse(creds.credentials), 
 			sshPrivateKey: privateKey 
 		})
