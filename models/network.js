@@ -14,10 +14,10 @@ const Network = mongoose.model('network', NetworkSchema)
 Network.add = async ({name, binary_url, binary_name, chainspec, validators, provider, count, project_id}, team_id) => {
 
 	const ts = new TeamStorage(team_id)
-	
+
 	// get provider credentails
 	const creds = await Provider.findOne({_id: provider, team: team_id})
- 	
+
 	// add network to DB
 	const network = await Network.create({
 		name: name,
@@ -26,20 +26,20 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 		chainspec: chainspec,
 		team: team_id
 	})
-	
+
 	// add nodes to DB
 	let nodes = await Node.addMultiple(
-		count, 
+		count,
 		{
-			network_id: network._id, 
-			validator: validators, 
+			network_id: network._id,
+			validator: validators,
 			provider: creds.provider
 		}
 	)
 
 
 	//////////////////////////////////////////
-	// build config, store chainspec, 
+	// build config, store chainspec,
 	// create ssh keys && deploy network
 	//////////////////////////////////////////
 	try {
@@ -47,7 +47,7 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 		let config = new Gantree.config(network._id)
 		config.binaryUrl = binary_url
 		config.binaryName = binary_name
-		
+
 		// the chainspec can be one of the following
 		// 'new' | Build New Spec | ???
 		// 'default' | Use Default Spec | Some default spec provided
@@ -67,42 +67,54 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 
 		// create SSH key pair
 		let ts_network = ts.useNetwork(network._id)
-		let { publicKey, privateKey } = ts_network.generateKeys()
+		let { publicKey, privateKeyPath } = await ts_network.generateKeys()
 
 		// configure nodes
 		Array.apply(null, Array(count)).map((_, i) => {
 			config.addNode({
 				provider: creds.provider,
 				sshKey: publicKey,
-				projectID: project_id
+				projectID: network._id
 			})
 		})
-		
+
 		// save the config file
 		let configPath = ts_network.addConfig(config.json)
-		
-		// trigger gantree 
+
+		const networkAdded = async () => {
+			await Node.updateMany({network: network._id}, {status: 'ONLINE'})
+			await Network.findByIdAndUpdate(network._id, {status: 'ONLINE'})
+			let _network = await Network.fetchById(network._id, team_id)
+			Hotwire.publish(network._id, 'UPDATE', _network)
+		}
+
+		// trigger gantree
 		Gantree.createNetwork({
 			configPath: configPath,
-			providerCredentails: JSON.parse(creds.credentials), 
-			sshPrivateKey: privateKey 
-		})
+			providerCredentials: JSON.parse(creds.credentials),
+			sshPrivateKeyPath: privateKeyPath
+		}, networkAdded)
 		// return IP addresses on completion
 		.then(async ips => {
 			// add IP addresses to network nodes
 			// IP count should match node count
 			// may run into issues when user has ability to
 			// provision validator and non-validator nodes
-			// together, as need to know which is which 
+			// together, as need to know which is which
+
+			console.log({ips})
+
+			// ideally now we would wait for the substrate telemetry server to come
+			// online and start spitting out information about these nodes
 
 			for (var i = 0; i < nodes.length; i++) {
 				// update node & publish
-				let node = await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: ips[i], status: 'ONLINE'}, {new: true})
+				let node = await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: ips[i], status: 'CONFIGURING'}, {new: true})
 				Hotwire.publish(nodes[i]._id, 'UPDATE', node)
 			}
-			
+
 			// update network & publish
-			await Network.findByIdAndUpdate(network._id, {status: 'ONLINE'})
+			await Network.findByIdAndUpdate(network._id, {status: 'CONFIGURING'})
 			let _network = await Network.fetchById(network._id, team_id)
 			Hotwire.publish(network._id, 'UPDATE', _network)
 		}).catch(e => {
@@ -113,25 +125,30 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 		console.log(e.message);
 	}
 
+	console.log({network})
+
 	Hotwire.publish('NETWORK', 'ADD')
 
-	return network
+	return Promise.resolve(network)
 }
 
 Network.delete = async (_id, team_id) => {
-
 	// delete network from fs
 	let ts_network = new TeamStorage(team_id).useNetwork(_id)
-	
+
+
+	// get creds
+	const creds = await Provider.find({team: team_id})
+
 	// get config path
 	let configPath = ts_network.configPath()
-		
+
 	// set network & nodes to SHUTDOWN status
 	let network = await Network.findByIdAndUpdate(_id, {status: 'SHUTDOWN'}, {new: true})
 	await Node.updateMany({network: _id}, {status: 'SHUTDOWN'})
-	
+
 	// async delete network via gantree
-	Gantree.deleteNetwork({configpath: configPath}).then(async result => {
+	Gantree.deleteNetwork({configPath: configPath, allProviderCredentials: creds}).then(async result => {
 		await Node.deleteMany({network: _id})
 		await Network.findByIdAndDelete(_id)
 		ts_network.delete()

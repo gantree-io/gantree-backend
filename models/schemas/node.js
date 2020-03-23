@@ -20,7 +20,7 @@ const schema = new mongoose.Schema(
 		},
 		status: {
 			type : String,
-			enum: ['DEPLOYING', 'ONLINE', 'SHUTDOWN', 'ERROR'],
+			enum: ['DEPLOYING', 'CONFIGURING', 'ONLINE', 'SHUTDOWN', 'ERROR'],
 			required : true,
 			trim: true,
 			default: 'DEPLOYING'
@@ -45,7 +45,7 @@ const schema = new mongoose.Schema(
 			autopopulate: true
 		},
 	},
-	{ 
+	{
 		timestamps: util.timestamps
 	}
 )

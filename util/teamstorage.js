@@ -1,7 +1,9 @@
 const fs = require('fs')
+const path = require('path')
 const del = require('del')
 const md5 = require('md5')
-const { generateKeyPairSync } = require('crypto');
+const keypair = require('keypair')
+const forge = require('node-forge')
 
 const createDir = dir => {
 	if (!fs.existsSync(dir)){
@@ -11,15 +13,15 @@ const createDir = dir => {
 
 /*
 	TeamStorage ----
-	TeamStorage allows for programatic creation, access and removal of local 
-	files (chainspecs, network configs & keys) relating to a particular team, 
+	TeamStorage allows for programatic creation, access and removal of local
+	files (chainspecs, network configs & keys) relating to a particular team,
 	based on folder structure
-	
-	examples: 
+
+	examples:
 
 	- init a new TS instance
 	let ts = new TeamStorage(team_id)
-	
+
 	- set a chainspec & return filename
 	let chainspec_filename = ts.chainspec.set(name, content)
 
@@ -33,7 +35,7 @@ const createDir = dir => {
 	let config_path = network.addConfig(config)
 */
 class TeamStorage{
-	
+
 	constructor(team_id){
 		if(!team_id) throw new Error('Team ID must be defined')
 		// define the storage root path
@@ -52,13 +54,13 @@ class TeamStorage{
 			// set filename/path
 			let filename = `${name}.json`
 			let path = `${dir}/${filename}`
-			
+
 			// check file doesn't exist
 			if (fs.existsSync(path)) throw new Error('Config file already exists with this name')
-			
+
 			// write file
 			fs.writeFileSync(path, content)
-			
+
 			//return filename
 			return filename
 		},
@@ -80,7 +82,7 @@ class TeamStorage{
 		const publickey_path = `${dir}/id_rsa.pub`
 		const privatekey_path = `${dir}/id_rsa`
 		const config_path = `${dir}/config.json`
-		
+
 		// create network dir if none exists
 		createDir(dir)
 
@@ -92,22 +94,12 @@ class TeamStorage{
 				if (fs.existsSync(publickey_path) && fs.existsSync(privatekey_path)){
 					return this.useNetwork(id).getKeys()
 				}
-				
-				const { publicKey, privateKey } = generateKeyPairSync('rsa', {
-					modulusLength: 4096,
-					publicKeyEncoding: {
-						type: 'spki',
-						format: 'pem'
-					},
-					privateKeyEncoding: {
-						type: 'pkcs8',
-						format: 'pem',
-					}
-				});
-				
-				// save keys
-				fs.writeFileSync(publickey_path, publicKey)
-				fs.writeFileSync(privatekey_path, privateKey)
+
+				const pair = keypair()
+				const sshPublicKey = forge.pki.publicKeyFromPem(pair.public);
+				const sshKey = forge.ssh.publicKeyToOpenSSH(sshPublicKey, 'web-automator@gantree.io');
+				fs.writeFileSync(publickey_path, sshKey)
+				fs.writeFileSync(privatekey_path, pair.private, { mode: fs.constants.S_IRUSR })
 
 				return this.useNetwork(id).getKeys()
 			},
@@ -115,7 +107,7 @@ class TeamStorage{
 			getKeys: () => {
 				return {
 					publicKey: fs.readFileSync(publickey_path, 'utf8').replace(/(\r\n|\n|\r)/gm, ""),
-					privateKey: fs.readFileSync(privatekey_path, 'utf8').replace(/(\r\n|\n|\r)/gm, "")
+					privateKeyPath: privatekey_path
 				}
 			},
 			// add a config file to this network
@@ -123,7 +115,7 @@ class TeamStorage{
 				// do we need to chck if config already exists??
 				// probably not... just rebuild?
 				fs.writeFileSync(config_path, JSON.stringify(config))
-				return config_path
+				return path.resolve(config_path)
 			},
 			delete: () => del.sync(dir, {force: true}),
 			configPath: () => config_path

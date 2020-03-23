@@ -6,7 +6,7 @@ const Hotwire = require('@util/hotwire')
 // return the network and node count for a given provider
 const addNetworkCount = async (_p, team_id) => {
 	let networks = await mongoose.models.network.fetchAllByTeam(team_id)
-	
+
 	let providerNetworks = []
 	let providerNodes = []
 
@@ -18,7 +18,7 @@ const addNetworkCount = async (_p, team_id) => {
 			}
 		}
 	}
-	
+
 	_p.networkCount = [...new Set(providerNetworks)].length
 	_p.nodeCount = [...new Set(providerNodes)].length
 
@@ -36,7 +36,7 @@ Provider.fetchAll = async (team_id, withCount) => {
 			providers[i] = addNetworkCount(providers[i], team_id)
 		}
 	}
-	
+
 	//  add network/node counts if requested
 	// providers = withCount === true
 	// 	? await addNetworkCount(providers, team_id)
@@ -54,30 +54,30 @@ Provider.add = async (provider, name, credentials, team_id) => {
  		provider: provider,
  		team: team_id
  	})
- 
+
  	if(_existing_creds.length) throw new Error(`Credentials already exists for ${provider}, please delete existing credentials first.`)
- 	
+
  	let _creds = await Provider.create({
  		credentials: credentials,
  		provider: provider,
  		name: name,
  		team: team_id
  	})
- 
+
  	Hotwire.publish('CREDENTIALS', 'ADD', _creds)
- 
+
  	return _creds
 }
 
 // parse digital ocean credentials
-Provider.addDO = async (digitalocean_token, team_id) => {
+Provider.addDO = async (do_api_token, team_id) => {
 	let credentials = JSON.stringify({
-		DIGITALOCEAN_TOKEN: digitalocean_token
+		DO_API_TOKEN: do_api_token
 	})
 	return await Provider.add('DO', 'Digital Ocean', credentials, team_id)
 }
 
-// parse aws credentials 
+// parse aws credentials
 Provider.addAWS = async (aws_access_key_id, aws_secret_access_key, team_id) => {
 	let credentials = JSON.stringify({
 		AWS_ACCESS_KEY_ID: aws_access_key_id,
@@ -86,12 +86,13 @@ Provider.addAWS = async (aws_access_key_id, aws_secret_access_key, team_id) => {
 	return await Provider.add('AWS', 'Amazon Web Services', credentials, team_id)
 }
 
-// parse gcp credentials 
+// parse gcp credentials
 Provider.addGCP = async (google_application_credentials, team_id) => {
 	let credentials = JSON.stringify({
-		GOOGLE_APPLICATION_CREDENTIALS: google_application_credentials,
+		GCP_SERVICE_ACCOUNT_FILE: google_application_credentials,
+		GCP_AUTH_KIND: 'serviceaccount'
 	})
-	return await Provider.add('GCP', 'Google Cloud Credentials', credentials, team_id)
+	return await Provider.add('GCP', 'Google Cloud Provider', credentials, team_id)
 }
 
 Provider.delete = async (_id, team_id) => {
