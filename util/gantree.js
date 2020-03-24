@@ -110,11 +110,11 @@ class Config {
 		const json = {
 			"metadata": {
 				"project": this._projectName, /// to be defined
-				"version": '1.0'
+				"version": '2.0'
 			},
 			"binary": {
 				"filename": this._binaryName, // to be defined
-				"useDefaultChainspec": this._useDefaultChainspec
+				"useBinChainSpec": this._useDefaultChainspec
 			},
 			"nodes": this._nodes
 		}

@@ -1480,19 +1480,19 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
-gantree-cli@^0.4.0-b5:
-  version "0.4.0-b5"
-  resolved "https://registry.yarnpkg.com/gantree-cli/-/gantree-cli-0.4.0-b5.tgz#b1c679a6e9bb40670e2088f58a6600ffe99df261"
-  integrity sha512-xInCCiM6lgfb/5H8hZiEPBsTe1CUTpN5TyRzT4dK3LxUpW8axWvejzNRWsIkQDGUWx9PpIQ1Px/PXIVIIKy96g==
+gantree-cli@^0.5.0-b1:
+  version "0.5.0-b1"
+  resolved "https://registry.yarnpkg.com/gantree-cli/-/gantree-cli-0.5.0-b1.tgz#0995465555bd043798c9423272bccb154edc09e7"
+  integrity sha512-Ts6NS2NVY60rVc0hIUdw+NQMuidRPHLqpKAlJawUIs5w5/F4wSmPci4AJfmm2hXdacCWDdSkfIOCRLSDL88wOg==
   dependencies:
     commander "^2.20.0"
     fs-extra "^8.1.0"
-    gantree-lib "^0.3.5-b1"
+    gantree-lib "^0.4.1-b1"
 
-gantree-lib@^0.3.5-b1:
-  version "0.3.5-b1"
-  resolved "https://registry.yarnpkg.com/gantree-lib/-/gantree-lib-0.3.5-b1.tgz#2afbee656d220f96251da96bb4754daf4a38b4b8"
-  integrity sha512-kMXkeuNf4XqMh4/KwDS+Bw+VS3bJjfOJqxP0s+9xzGxKTn4UsM+wyKCChQZDJvWb9Jx15PPh6x8+w+0WLK1m8A==
+gantree-lib@^0.4.1-b1:
+  version "0.4.1-b1"
+  resolved "https://registry.yarnpkg.com/gantree-lib/-/gantree-lib-0.4.1-b1.tgz#13710c78e71e88362f780cc144da69e9c67ccfd0"
+  integrity sha512-yIgkgqF6v2Eb2AXgQPbAQ8HCWBiBI8eUqe56uQkfeBCy9vFTkySXumUt0WAUAo835MfFst/hvC/7maPdT4S+mw==
   dependencies:
     ajv "^6.11.0"
     bignumber.js "^9.0.0"

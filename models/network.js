@@ -95,21 +95,21 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 			sshPrivateKeyPath: privateKeyPath
 		}, networkAdded)
 		// return IP addresses on completion
-		.then(async ips => {
+		.then(async deployed => {
 			// add IP addresses to network nodes
 			// IP count should match node count
 			// may run into issues when user has ability to
 			// provision validator and non-validator nodes
 			// together, as need to know which is which
 
-			console.log({ips})
+			console.log({deployed})
 
 			// ideally now we would wait for the substrate telemetry server to come
 			// online and start spitting out information about these nodes
 
 			for (var i = 0; i < nodes.length; i++) {
 				// update node & publish
-				let node = await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: ips[i], status: 'CONFIGURING'}, {new: true})
+				let node = await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: deployed[i].IP, name: deployed[i].nodeName, status: 'CONFIGURING'}, {new: true})
 				Hotwire.publish(nodes[i]._id, 'UPDATE', node)
 			}
 
