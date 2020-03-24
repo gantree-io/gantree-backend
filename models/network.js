@@ -109,7 +109,7 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 
 			for (var i = 0; i < nodes.length; i++) {
 				// update node & publish
-				let node = await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: deployed[i].IP, name: deployed[i].nodeName, status: 'CONFIGURING'}, {new: true})
+				let node = await Node.findOneAndUpdate({_id: nodes[i]._id}, {ip: deployed[i].IP, name: deployed[i].hostName, status: 'CONFIGURING'}, {new: true})
 				Hotwire.publish(nodes[i]._id, 'UPDATE', node)
 			}
 
