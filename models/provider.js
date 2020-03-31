@@ -89,10 +89,10 @@ Provider.addAWS = async (aws_access_key_id, aws_secret_access_key, team_id) => {
 // parse gcp credentials
 Provider.addGCP = async (google_application_credentials, team_id) => {
 	let credentials = JSON.stringify({
-		GCP_SERVICE_ACCOUNT_FILE: google_application_credentials,
+		GCP_SERVICE_ACCOUNT_CONTENTS: google_application_credentials,
 		GCP_AUTH_KIND: 'serviceaccount'
 	})
-	return await Provider.add('GCP', 'Google Cloud Provider', credentials, team_id)
+	return await Provider.add('GCP', 'Google Cloud Platform', credentials, team_id)
 }
 
 Provider.delete = async (_id, team_id) => {
