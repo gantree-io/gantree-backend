@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
+const path = require('path')
 const NetworkSchema = require('@schemas/network');
 const Node = require('./node')
 const Provider = require('./provider')
 const Hotwire = require('@util/hotwire')
 const Gantree = require('@util/gantree')
-const md5 = require('md5')
 const TeamStorage = require('@util/teamstorage')
 
 // model
@@ -67,13 +67,13 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 
 		// create SSH key pair
 		let ts_network = ts.useNetwork(network._id)
-		let { publicKey, privateKeyPath } = await ts_network.generateKeys()
+		let { privateKeyPath } = await ts_network.generateKeys()
 
 		// configure nodes
 		Array.apply(null, Array(count)).map((_, i) => {
 			config.addNode({
 				provider: creds.provider,
-				sshKey: publicKey,
+				sshPrivateKeyPath: path.resolve(privateKeyPath),
 				projectID: network._id
 			})
 		})
@@ -81,9 +81,10 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 		// save the config file
 		let configPath = ts_network.addConfig(config.json)
 
-		const networkAdded = async () => {
-			await Node.updateMany({network: network._id}, {status: 'ONLINE'})
-			await Network.findByIdAndUpdate(network._id, {status: 'ONLINE'})
+		const networkAdded = async (e, stdout, stderr) => {
+			let status = e || stderr !== '' ? 'ERROR' : 'ONLINE'
+			await Node.updateMany({network: network._id}, {status})
+			await Network.findByIdAndUpdate(network._id, {status})
 			let _network = await Network.fetchById(network._id, team_id)
 			Hotwire.publish(network._id, 'UPDATE', _network)
 		}

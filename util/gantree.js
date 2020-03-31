@@ -1,7 +1,7 @@
 const { exec, execSync } = require('child_process');
 
 const createNode = {
-	GCP: (name, sshKey, projectID) => ({
+	GCP: (name, sshPrivateKeyPath, projectID) => ({
 		"name": name.substr(0, 18),
 		"validator": true,
 		"binaryOptions": {
@@ -15,11 +15,11 @@ const createNode = {
 			"zone": "us-east1-b",
 			"region": "us-east1",
 			"sshUser": "root",
-			"sshPublicKey": sshKey,
-			"projectId": projectID
+			"sshPrivateKeyPath": sshPrivateKeyPath,
+			"projectId": 'gantree-dashboard'
 		}
 	}),
-	DO: (name, sshKey) => ({
+	DO: (name, sshPrivateKeyPath) => ({
 		"name": name.substr(0, 18),
 		"validator": true,
 		"binaryOptions": {
@@ -31,10 +31,10 @@ const createNode = {
 			"size": "s-1vcpu-1gb",
 			"zone": "nyc3",
 			"sshUser": "root",
-			"sshPublicKey": sshKey
+			"sshPrivateKeyPath": sshPrivateKeyPath
 		}
 	}),
-	AWS: (name, sshKey) => ({
+	AWS: (name, sshPrivateKeyPath) => ({
 		"name": name.substr(0, 18),
 		"validator": true,
 		"binaryOptions": {
@@ -47,7 +47,7 @@ const createNode = {
 			"zone": "eu-central-1",
 			"location": "eu-central-1",
 			"sshUser": "ubuntu",
-			"sshPublicKey": sshKey
+			"sshPrivateKeyPath": sshPrivateKeyPath
 		}
 	}),
 }
@@ -97,9 +97,8 @@ class Config {
 		this._useDefaultChainspec = path
 	}
 
-	addNode({provider, sshKey, projectID}){
-		console.log({sshKey})
-		let node = createNode[provider](`node-${this._nodes.length + 1}-${projectID}`, sshKey, projectID)
+	addNode({provider, sshPrivateKeyPath, projectID}){
+		let node = createNode[provider](`node-${this._nodes.length + 1}-${projectID}`, sshPrivateKeyPath, projectID)
 		this._nodes.push(node)
 	}
 
@@ -238,11 +237,13 @@ const createNetwork = async ({configPath, providerCredentials, sshPrivateKeyPath
 			const cmd = `npx gantree-cli sync`;
 			execResult = exec(cmd, onFinish)
 			return new Promise((resolve, reject) => {
+				let rejectTimer = setTimeout(() => reject('Gantree CLI Timeout'), 300000)
 				execResult.stdout.on('data', (data) => {
 					console.log(data)
 					const hasIpAddresses = /!!!NODE_IP_ADDRESSES ==> (.*)/g.exec(data)
 					if (hasIpAddresses) {
 						console.log({parsed: JSON.parse(hasIpAddresses[1])})
+						clearTimeout(rejectTimer)
 						resolve(JSON.parse(hasIpAddresses[1]))
 					}
 				})

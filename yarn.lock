@@ -1480,19 +1480,19 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
-gantree-cli@^0.5.0-b1:
-  version "0.5.0-b1"
-  resolved "https://registry.yarnpkg.com/gantree-cli/-/gantree-cli-0.5.0-b1.tgz#0995465555bd043798c9423272bccb154edc09e7"
-  integrity sha512-Ts6NS2NVY60rVc0hIUdw+NQMuidRPHLqpKAlJawUIs5w5/F4wSmPci4AJfmm2hXdacCWDdSkfIOCRLSDL88wOg==
+gantree-cli@^0.5.1-b:
+  version "0.5.1-b"
+  resolved "https://registry.yarnpkg.com/gantree-cli/-/gantree-cli-0.5.1-b.tgz#3ffc90bedc0105f4751e0ff1130e5856dd9b7d65"
+  integrity sha512-Wk0Xa+hGX54POOLSgO35W96GVn1c42LBwZ6ColPxE1wOJaVE2+wqeAkJP64Z51q3VZb2LO36861s6RQ/xqsotA==
   dependencies:
     commander "^2.20.0"
     fs-extra "^8.1.0"
-    gantree-lib "^0.4.1-b1"
+    gantree-lib "^0.4.3-b"
 
-gantree-lib@^0.4.1-b1:
-  version "0.4.1-b1"
-  resolved "https://registry.yarnpkg.com/gantree-lib/-/gantree-lib-0.4.1-b1.tgz#13710c78e71e88362f780cc144da69e9c67ccfd0"
-  integrity sha512-yIgkgqF6v2Eb2AXgQPbAQ8HCWBiBI8eUqe56uQkfeBCy9vFTkySXumUt0WAUAo835MfFst/hvC/7maPdT4S+mw==
+gantree-lib@^0.4.3-b:
+  version "0.4.3-b"
+  resolved "https://registry.yarnpkg.com/gantree-lib/-/gantree-lib-0.4.3-b.tgz#b4c8bda7ea26e26fcc6d06b706129c9eb0379acd"
+  integrity sha512-KugCVnT6Omz+ccMBs821YozWj6hMtZaJBdcWR2nkv4bEeFfJYXbj/G3k5JaFi35v15Ydy6lGUultu0UiNwRo5w==
   dependencies:
     ajv "^6.11.0"
     bignumber.js "^9.0.0"
@@ -1503,6 +1503,7 @@ gantree-lib@^0.4.1-b1:
     handlebars "^4.3.0"
     js-yaml "^3.13.1"
     json-bigint "^0.3.0"
+    lodash.clonedeepwith "^4.5.0"
     node-forge "^0.9.0"
     ospath "^1.2.2"
     ow "^0.17.0"
@@ -2103,6 +2104,11 @@ lodash.camelcase@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
   integrity sha1-soqmKIorn8ZRA1x3EfZathkDMaY=
+
+lodash.clonedeepwith@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeepwith/-/lodash.clonedeepwith-4.5.0.tgz#6ee30573a03a1a60d670a62ef33c10cf1afdbdd4"
+  integrity sha1-buMFc6A6GmDWcKYu8zwQzxr9vdQ=
 
 lodash.has@^4.5.2:
   version "4.5.2"
