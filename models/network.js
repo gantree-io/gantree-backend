@@ -11,7 +11,7 @@ const TeamStorage = require('@util/teamstorage')
 const Network = mongoose.model('network', NetworkSchema)
 
 // add a new network
-Network.add = async ({name, binary_url, binary_name, chainspec, validators, provider, count, project_id}, team_id) => {
+Network.add = async ({name, binary_url, binary_name, binary_opts, chainspec, validators, provider, count, project_id}, team_id) => {
 
 	const ts = new TeamStorage(team_id)
 
@@ -47,6 +47,7 @@ Network.add = async ({name, binary_url, binary_name, chainspec, validators, prov
 		let config = new Gantree.config(network._id)
 		config.binaryUrl = binary_url
 		config.binaryName = binary_name
+		config.binaryOpts = binary_opts
 
 		// the chainspec can be one of the following
 		// 'new' | Build New Spec | ???

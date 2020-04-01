@@ -57,6 +57,7 @@ class Config {
 	_projectName
 	_binaryUrl
 	_binaryName
+	_binaryOpts = []
 	_chainspecPath
 	_useDefaultChainspec
 	_nodes = []
@@ -89,6 +90,10 @@ class Config {
 		this._binaryName = name
 	}
 
+	set binaryOpts(opts=[]){
+		this._binaryOpts = opts
+	}
+
 	set chainspecPath(path){
 		this._chainspecPath = path
 	}
@@ -108,12 +113,13 @@ class Config {
 
 		const json = {
 			"metadata": {
-				"project": this._projectName, /// to be defined
+				"project": this._projectName,
 				"version": '2.0'
 			},
 			"binary": {
-				"filename": this._binaryName, // to be defined
-				"useBinChainSpec": this._useDefaultChainspec
+				"filename": this._binaryName,
+				"useBinChainSpec": this._useDefaultChainspec,
+				// -----> TODO BINARY OPTIONS "____options": this._binaryOpts
 			},
 			"nodes": this._nodes
 		}
@@ -217,13 +223,13 @@ const createNetwork = async ({configPath, providerCredentials, sshPrivateKeyPath
 
 	// map all provider credentails to env vars
 	Object.keys(providerCredentials).map(name => {
-		process.env[name] = providerCredentials[name]
+	process.env[name] = providerCredentials[name]
 	})
 
-	 process.env['SSH_ID_RSA_VALIDATOR'] = sshPrivateKeyPath;
-	 process.env['GANTREE_CONFIG_PATH'] = configPath
+	process.env['SSH_ID_RSA_VALIDATOR'] = sshPrivateKeyPath;
+	process.env['GANTREE_CONFIG_PATH'] = configPath
 
-	 let result
+	let result
 
 	try {
 		// mock a network configure
