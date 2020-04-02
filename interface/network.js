@@ -8,6 +8,7 @@ module.exports = {
 			status: String!
 			binary_url: String!
 			binary_name: String!
+			binary_opts: [String],
 			chainspec: String!
 			nodes: [Node]
 			team: Team!
@@ -19,7 +20,7 @@ module.exports = {
 		}
 
 		extend type Mutation {
-			addNetwork(name: String! count: Int! validators: Boolean! provider: String! binary_url: String! binary_name: String! chainspec: String! project_id: String): Network!
+			addNetwork(name: String! count: Int! validators: Boolean! provider: String! binary_url: String! binary_name: String! binary_opts: [String], chainspec: String! project_id: String): Network!
 			deleteNetwork(_id: String!): Boolean
 		}
 	`,
@@ -30,7 +31,7 @@ module.exports = {
 		},
 		Mutation: {
 			addNetwork: async (_, network, {team}) => await Network.add(network, team._id),
-			deleteNetwork: async (_, {_id}, {team}) => await Network.delete(_id, team._id) 
+			deleteNetwork: async (_, {_id}, {team}) => await Network.delete(_id, team._id)
 		}
 	}
 }
