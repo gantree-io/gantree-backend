@@ -1,12 +1,24 @@
 const { exec, execSync } = require('child_process');
 
+// when we switch the backend to use the nodejs-lib we will hopefully be able
+// to pull the available presets from the lib
+const presets = {
+	'https://github.com/paritytech/polkadot/releases/download/v0.7.22/polkadot': {
+		name: 'polkadot-0.7.22'
+	},
+	'https://substrate-node-bins.sgp1.digitaloceanspaces.com/edgeware-3.0.1-CompiledByFlex': {
+		name: 'edgeware-3.0.1'
+	}
+}
+
 const createNode = {
-	GCP: (name, sshPrivateKeyPath, projectID) => ({
+	GCP: (name, sshPrivateKeyPath, binaryOptions) => ({
 		"name": name.substr(0, 18),
 		"validator": true,
 		"binaryOptions": {
 			"loggingFilter": "sync=trace,afg=trace,babe=debug",
 			"telemetry": true,
+			"substrateOptions": binaryOptions
 		},
 		"instance": {
 			"provider": "gcp",
@@ -19,12 +31,13 @@ const createNode = {
 			"projectId": 'gantree-dashboard'
 		}
 	}),
-	DO: (name, sshPrivateKeyPath) => ({
+	DO: (name, sshPrivateKeyPath, binaryOptions) => ({
 		"name": name.substr(0, 18),
 		"validator": true,
 		"binaryOptions": {
 			"loggingFilter": "sync=trace,afg=trace,babe=debug",
 			"telemetry": true,
+			"substrateOptions": binaryOptions
 		},
 		"instance": {
 			"provider": "do",
@@ -34,12 +47,13 @@ const createNode = {
 			"sshPrivateKeyPath": sshPrivateKeyPath
 		}
 	}),
-	AWS: (name, sshPrivateKeyPath) => ({
+	AWS: (name, sshPrivateKeyPath, binaryOptions) => ({
 		"name": name.substr(0, 18),
 		"validator": true,
 		"binaryOptions": {
 			"loggingFilter": "sync=trace,afg=trace,babe=debug",
 			"telemetry": true,
+			"substrateOptions": binaryOptions
 		},
 		"instance": {
 			"provider": "aws",
@@ -57,6 +71,7 @@ class Config {
 	_projectName
 	_binaryUrl
 	_binaryName
+	_binaryOpts = []
 	_chainspecPath
 	_useDefaultChainspec
 	_nodes = []
@@ -76,7 +91,10 @@ class Config {
 
 	set binaryUrl(url){
 		// TODO test for other git providers (BB public and GitLab)
-		if(/^https:\/\/github.com\/(.*)/.test(url)){
+		if (presets[url]) {
+			this._binaryType = 'preset'
+			this._presetName = presets[url].name
+		}else if(/^https:\/\/github.com\/(.*)/.test(url)){
 			this._binaryUrl = url
 			this._binaryType = 'repository'
 		}else{
@@ -89,6 +107,10 @@ class Config {
 		this._binaryName = name
 	}
 
+	set binaryOpts(opts=[]){
+		this._binaryOpts = opts
+	}
+
 	set chainspecPath(path){
 		this._chainspecPath = path
 	}
@@ -98,7 +120,7 @@ class Config {
 	}
 
 	addNode({provider, sshPrivateKeyPath, projectID}){
-		let node = createNode[provider](`node-${this._nodes.length + 1}-${projectID}`, sshPrivateKeyPath, projectID)
+		let node = createNode[provider](`node-${this._nodes.length + 1}-${projectID}`, sshPrivateKeyPath, this._binaryOpts)
 		this._nodes.push(node)
 	}
 
@@ -108,17 +130,19 @@ class Config {
 
 		const json = {
 			"metadata": {
-				"project": this._projectName, /// to be defined
+				"project": this._projectName,
 				"version": '2.0'
 			},
 			"binary": {
-				"filename": this._binaryName, // to be defined
-				"useBinChainSpec": this._useDefaultChainspec
+				"filename": this._binaryName,
+				"useBinChainSpec": this._useDefaultChainspec,
 			},
 			"nodes": this._nodes
 		}
 
-		if (this._binaryType === 'repository') {
+		if (this._binaryType === 'preset') {
+			json.binary = { "preset": this._presetName }
+		} else if (this._binaryType === 'repository') {
 			const repository = {
 				url: this._binaryUrl,
 				version: 'HEAD' // default, might change in future
@@ -137,7 +161,7 @@ class Config {
 	validate(){
 		const errors = []
 		if(!this._projectName) errors.push('Name must be defined')
-		if(!this._binaryUrl) errors.push('Binary URL must be defined')
+		if(!this._binaryUrl && !this._presetName) errors.push('Binary URL must be defined')
 		if(!this._binaryName) errors.push('Binary Name must be defined')
 		if(!this._chainspecPath && this._useDefaultChainspec === null) errors.push('chainspecPath or useDefaultSpec must be defined')
 		if(!this._nodes.length) errors.push('Nodes have not been configured')
@@ -217,13 +241,13 @@ const createNetwork = async ({configPath, providerCredentials, sshPrivateKeyPath
 
 	// map all provider credentails to env vars
 	Object.keys(providerCredentials).map(name => {
-		process.env[name] = providerCredentials[name]
+	process.env[name] = providerCredentials[name]
 	})
 
-	 process.env['SSH_ID_RSA_VALIDATOR'] = sshPrivateKeyPath;
-	 process.env['GANTREE_CONFIG_PATH'] = configPath
+	process.env['SSH_ID_RSA_VALIDATOR'] = sshPrivateKeyPath;
+	process.env['GANTREE_CONFIG_PATH'] = configPath
 
-	 let result
+	let result
 
 	try {
 		// mock a network configure
@@ -232,7 +256,7 @@ const createNetwork = async ({configPath, providerCredentials, sshPrivateKeyPath
 		}
 		// configure network
 		else{
-			execSync(`ssh-add -D`, {stdio: 'inherit'})
+			// execSync(`ssh-add -D`, {stdio: 'inherit'})
 			execSync(`ssh-add ${sshPrivateKeyPath}`, {stdio: 'inherit'})
 			const cmd = `npx gantree-cli sync`;
 			execResult = exec(cmd, onFinish)

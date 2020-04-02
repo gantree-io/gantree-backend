@@ -43,7 +43,7 @@ const schema = new mongoose.Schema(
 			required : true,
 			trim: true,
 			autopopulate: true
-		},
+		}
 	},
 	{
 		timestamps: util.timestamps
