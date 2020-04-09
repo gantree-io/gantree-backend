@@ -18,6 +18,9 @@ const { AuthenticationError } = require('apollo-server');
 User.authByFirebaseToken = async token => {
 	const {uid, name, email, ...rest} = await Firebase.verifyToken(token)
 
+	console.log({uid, name, email, rest})
+	console.log({fb: rest.firebase.identities})
+
 	// check DB for existing account
 	let _user = await User.findOne({'email': email})
 
@@ -185,8 +188,8 @@ User.sendInvitation = async (_id, authUser) => {
 	// async
 	Emailer.send(Invitation, {
 		sender: {
-			name: _user.team.owner.name,
-			email: _user.team.owner.email,
+			name: 'Gantree Admin',
+			email: process.env.EMAILER_ACC_SENDER,
 		},
 		to:  _user.email,
 		vars: {
