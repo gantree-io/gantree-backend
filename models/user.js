@@ -21,18 +21,22 @@ User.authByFirebaseToken = async token => {
 	// check DB for existing account
 	let _user = await User.findOne({'email': email})
 
+	console.log({_user})
+
 	// if not found: create local account & team
 	if(!_user){
 
 		let status = 'ACTIVE'
 		let verificationCode = null
 
-		// if user signed up with password.... 
+		// if user signed up with password....
 		if(_.get(rest, 'firebase.sign_in_provider') === 'password'){
 			status = 'UNVERIFIED'
 			verificationCode = Math.ceil(Math.random() * (999999 - 100000) + 100000)
 		}
-		
+
+		console.log({verificationCode})
+
 		// add user
 		_user = await User.create({
 			name: name,
@@ -44,17 +48,18 @@ User.authByFirebaseToken = async token => {
 
 		// new team with owner
 		let _team = await mongoose.models.team.new(_user._id)
-		
+
 		// add team into user
 		_user = await User.findByIdAndUpdate(_user._id, {team: _team._id}, { new: true })
 
 
 		if(status === 'UNVERIFIED'){
+			console.log('Sending verification email')
 			// send verification email
 			Emailer.send(Verification, {
 				sender: {
 					name: 'Gantree Admin',
-					email: process.env.EMAILER_ACC_USER, 
+					email: process.env.EMAILER_ACC_SENDER,
 				},
 				to:  _user.email,
 				vars: {
@@ -68,18 +73,18 @@ User.authByFirebaseToken = async token => {
 	// so add uid
 	else if(!_user.uid){
 		_user = await User.findByIdAndUpdate(
-			_user._id, 
+			_user._id,
 			{
 				uid: uid,
 				//name: name
-			}, 
+			},
 			{
 				new: true
 			}
 		)
 	}
 
-	if(_user.status === 'INACTIVE') throw new AuthenticationError('Inactive account'); 
+	if(_user.status === 'INACTIVE') throw new AuthenticationError('Inactive account');
 
 	Hotwire.setTeam(_user.team._id)
 
@@ -99,8 +104,8 @@ User.authByFirebaseToken = async token => {
  */
 User.invite = async (email, team, authUser) => {
 	let _user = await User.create({
-		email: email, 
-		team: team._id, 
+		email: email,
+		team: team._id,
 		status: 'INVITATION_SENT'
 	})
 	await User.sendInvitation(_user._id, authUser)
@@ -111,11 +116,11 @@ User.invite = async (email, team, authUser) => {
 User.verifyAccount = async (verificationCode, user) => {
 	let _user = await User.findOneAndUpdate(
 		{
-			_id: user._id, 
+			_id: user._id,
 			verificationCode: verificationCode
-		}, 
+		},
 		{
-			verificationCode: null, 
+			verificationCode: null,
 			status: 'ACTIVE'
 		}, {
 			new: true
@@ -181,7 +186,7 @@ User.sendInvitation = async (_id, authUser) => {
 	Emailer.send(Invitation, {
 		sender: {
 			name: _user.team.owner.name,
-			email: _user.team.owner.email, 
+			email: _user.team.owner.email,
 		},
 		to:  _user.email,
 		vars: {
