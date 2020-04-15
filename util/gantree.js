@@ -8,6 +8,9 @@ const presets = {
 	},
 	'https://substrate-node-bins.sgp1.digitaloceanspaces.com/edgeware-3.0.1-CompiledByFlex': {
 		name: 'edgeware-3.0.1'
+	},
+	'https://github.com/paritytech/polkadot/releases/download/v0.7.28/polkadot': {
+		name: 'westend-0.7.28'
 	}
 }
 

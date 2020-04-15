@@ -32,6 +32,7 @@ const send = async (template, {sender, to, vars, onSuccess=()=>{}, onFailure=()=
 					from: sender,
 					..._template
 				});
+				console.log({info})
 			} catch (error) {
 				console.error('Error sending verification email', error);
 				if (error.response) {
