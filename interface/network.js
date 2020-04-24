@@ -22,6 +22,7 @@ module.exports = {
 		extend type Mutation {
 			addNetwork(name: String! count: Int! validators: Boolean! provider: String! binary_url: String! binary_name: String! binary_opts: [String], chainspec: String! project_id: String): Network!
 			deleteNetwork(_id: String!): Boolean
+			addCliNetwork(apiKey: String! ipAddresses: [String] config: String): Boolean
 		}
 	`,
 	resolvers: {

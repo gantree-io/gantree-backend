@@ -49,10 +49,10 @@ const handleAuth = async (whitelist, {req, res}) => {
 		}else if(whitelist.includes(req.body.operationName) || isIntrospectionQuery){
 			return req
 		}else{
-			throw new Error('Authentication error'); 
+			throw new Error('Authentication error');
 		}
 	} catch(e) {
-		throw new AuthenticationError(e); 
+		throw new AuthenticationError(e);
 	}
 }
 

@@ -16,11 +16,13 @@ module.exports = {
 			tokens: Tokens
 			status: String!
 			subscribed: Boolean!
-			verificationCode: String
+			verificationCode: String,
+			apiKey: String,
 		}
 
 		extend type Query {
 			authByFirebaseToken(token: String!): User
+			authByApiKey(key: String!): User
 			verifyAccount(verificationCode: Int): User!
 		}
 
@@ -37,7 +39,8 @@ module.exports = {
 	resolvers: {
 	 	Query: {
 	 		authByFirebaseToken: async (parent, {token}) => await User.authByFirebaseToken(token),
-	 		verifyAccount: async (parent, {verificationCode}, {user}) => User.verifyAccount(verificationCode, user)
+	 		authByApiKey: async (parent, {apiKey}) => await User.authByApiKey(apiKey),
+			verifyAccount: async (parent, {verificationCode}, {user}) => User.verifyAccount(verificationCode, user)
 	 	},
 	 	Mutation: {
 	 		inviteUser: async (parent, {email}, {team, user}) => await User.invite(email, team, user),
@@ -46,8 +49,7 @@ module.exports = {
 	 		deleteUser: async (parent, {_id}, {user}) => await User.delete(_id, user),
 	 		resendInvitation: async (parent, {_id}, {user}) => await User.sendInvitation(_id, user),
 	 		activateUser: async (parent, {_id}) => await User.setStatus(_id, 'ACTIVE'),
-	 		deactivateUser: async (parent, {_id}) => await User.setStatus(_id, 'INACTIVE'),
-	 		
+	 		deactivateUser: async (parent, {_id}) => await User.setStatus(_id, 'INACTIVE')
 	 	}
 	}
 }

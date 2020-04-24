@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const _ = require('lodash');
+const uuid = require('uuid')
 const Emailer = require('@util/emailer')
 const Invitation = require('@email/invitation')
 const Verification = require('@email/verification')
@@ -18,13 +19,8 @@ const { AuthenticationError } = require('apollo-server');
 User.authByFirebaseToken = async token => {
 	const {uid, name, email, ...rest} = await Firebase.verifyToken(token)
 
-	console.log({uid, name, email, rest})
-	console.log({fb: rest.firebase.identities})
-
 	// check DB for existing account
 	let _user = await User.findOne({'email': email})
-
-	console.log({_user})
 
 	// if not found: create local account & team
 	if(!_user){
@@ -37,8 +33,6 @@ User.authByFirebaseToken = async token => {
 			status = 'UNVERIFIED'
 			verificationCode = Math.ceil(Math.random() * (999999 - 100000) + 100000)
 		}
-
-		console.log({verificationCode})
 
 		// add user
 		_user = await User.create({
@@ -89,8 +83,30 @@ User.authByFirebaseToken = async token => {
 
 	if(_user.status === 'INACTIVE') throw new AuthenticationError('Inactive account');
 
+	if (!_user.apiKey) {
+		_user = await User.findByIdAndUpdate(
+			_user._id,
+			{ apiKey: uuid.v4() },
+			{ new: true }
+		)
+	}
+
 	Hotwire.setTeam(_user.team._id)
 
+	return {
+		..._user.toObject(),
+		tokens: Auth.generateTokens({
+			_id: _user._id,
+			team_id: _user.team._id
+		})
+	}
+}
+
+// Auth the user by their API Key
+User.authByApiKey = async (apiKey) => {
+	console.log('Trying to auth')
+	let _user = await User.findOne({apiKey})
+	if (!_user) throw new AuthenticationError('Incorrect API Key');
 	return {
 		..._user.toObject(),
 		tokens: Auth.generateTokens({

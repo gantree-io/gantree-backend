@@ -40,10 +40,14 @@ const schema = new mongoose.Schema(
 			type: Number,
 			min: 100000,
 			max: 999999
+		},
+		apiKey: {
+			type: String,
+			trim: true
 		}
 	},
-	{ 
-		timestamps: util.timestamps 
+	{
+		timestamps: util.timestamps
 	}
 )
 

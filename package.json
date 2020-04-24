@@ -26,7 +26,7 @@
     "nodemailer": "^6.4.2",
     "shelljs": "^0.8.3",
     "socket.io": "^2.3.0",
-    "uuid": "^7.0.2"
+    "uuid": "^7.0.3"
   },
   "devDependencies": {},
   "_moduleAliases": {
