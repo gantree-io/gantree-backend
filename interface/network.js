@@ -1,7 +1,7 @@
 const Network = require('@models/network')
 
 module.exports = {
-	typeDef: `
+  typeDef: `
 		type Network {
 			_id: String!
 			name: String!
@@ -22,17 +22,23 @@ module.exports = {
 		extend type Mutation {
 			addNetwork(name: String! count: Int! validators: Boolean! provider: String! binary_url: String! binary_name: String! binary_opts: [String], chainspec: String! project_id: String): Network!
 			deleteNetwork(_id: String!): Boolean
-			addCliNetwork(apiKey: String! ipAddresses: [String] config: String): Boolean
+			addCliNetwork(apiKey: String! ipAddresses: String! config: String!): Boolean
 		}
 	`,
-	resolvers: {
-		Query: {
-			networks: async (_, {}, {team}) => await Network.fetchAllByTeam(team._id),
-			network: async (_, {_id}, {team}) => await Network.fetchById(_id, team._id)
-		},
-		Mutation: {
-			addNetwork: async (_, network, {team}) => await Network.add(network, team._id),
-			deleteNetwork: async (_, {_id}, {team}) => await Network.delete(_id, team._id)
-		}
-	}
+  resolvers: {
+    Query: {
+      networks: async (_, {}, { team }) =>
+        await Network.fetchAllByTeam(team._id),
+      network: async (_, { _id }, { team }) =>
+        await Network.fetchById(_id, team._id)
+    },
+    Mutation: {
+      addNetwork: async (_, network, { team }) =>
+        await Network.add(network, team._id),
+      deleteNetwork: async (_, { _id }, { team }) =>
+        await Network.delete(_id, team._id),
+      addCliNetwork: async (_, { ipAddresses, config }, { team }) =>
+        await Network.addViaCli(ipAddresses, config, team._id)
+    }
+  }
 }

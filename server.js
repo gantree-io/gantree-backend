@@ -11,6 +11,7 @@ const authWhitelist = [
 	'ping',
 	'authByFirebaseToken',
 	'authByApiKey',
+	'addCliNetwork'
 ]
 
 mongoose.Promise = global.Promise
