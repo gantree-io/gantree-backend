@@ -222,13 +222,36 @@ Network.addViaCli = async (ipAddresses, config, team_id) => {
   })
 
   // create node object(s)
-  let nodes = await Node.addMultiple(2, {
-    network_id: network._id,
-    validator: true,
-    provider: 'DO',
-    status: 'ONLINE'
-  })
+
+  // for (let ip of ipAddresses) {
+  // }
+
+  // let nodes = await Node.addMultiple(2, {
+  //   network_id: network._id,
+  //   validator: true,
+  //   provider: 'DO',
+  //   status: 'ONLINE'
+  // })
 }
+
+// Network.fetchStatistics = async (_id) => {
+//   const nodes = await Node.fetchByNetwork(network._id)
+//   // create a list of ip addresses
+//   const ips = []
+//   for (let node of nodes) {
+//     ips.push(node.ipAddress)
+//   }
+//   console.log({ ips }) // ["192.", "168."]
+
+//   // construct the request to the prometheus server
+
+//   // hey prometheus, we want you to give us the data that you have on file for
+//   // these n ip_addresses, please could you do so. thank you very much.
+
+//   // const response = await fetch(prometheus_server, {ips})
+
+//   // return await response.json()
+// }
 
 Network.fetchById = async (_id, team_id) => {
   const network = await Network.findOne({ _id: _id, team: team_id })
