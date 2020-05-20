@@ -111,7 +111,6 @@ Network.add = async ({name, binary_url, binary_name, binary_opts, chainspec, val
 
 			for (var i = 0; i < nodes.length; i++) {
 				// update node & publish
-				console.log({chainName: config.telemetryChainName})
 				let node = await Node.findOneAndUpdate({
 					_id: nodes[i]._id
 				}, {

@@ -30,12 +30,12 @@ Team.updateOwner = async (_id, owner, new_owner_id) => {
 	Hotwire.publish('TEAM', 'UPDATE')
 
 	let newOwner = await User.findById(new_owner_id)
-	
+
 	// send email to new owner
 	Emailer.send(NewTeamOwner, {
 		sender: {
-			name: owner.name,
-			email: owner.email, 
+			name: 'Gantree Admin',
+			email: process.env.EMAILER_ACC_SENDER,
 		},
 		to:  newOwner.email,
 		vars: {

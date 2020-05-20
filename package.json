@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Gantree Server",
   "dependencies": {
+    "@sendgrid/mail": "^7.0.0",
     "apollo-server": "^2.10.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
