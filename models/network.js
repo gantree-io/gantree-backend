@@ -253,6 +253,16 @@ Network.addViaCli = async (ipAddresses, config, team_id) => {
 //   // return await response.json()
 // }
 
+Network.deleteViaCli = async (_id, team_id) => {
+  console.log({ ipAddresses, config, team_id })
+
+  // create network object
+  const network = await Network.deleteOne({
+    _id: _id,
+    team: team_id
+  })
+}
+
 Network.fetchById = async (_id, team_id) => {
   const network = await Network.findOne({ _id: _id, team: team_id })
   const nodes = await Node.fetchByNetwork(network._id)

@@ -11,7 +11,8 @@ const authWhitelist = [
 	'ping',
 	'authByFirebaseToken',
 	'authByApiKey',
-	'addCliNetwork'
+	'addCliNetwork',
+	'deleteCliNetwork'
 ]
 
 mongoose.Promise = global.Promise
@@ -22,6 +23,6 @@ mongoose.connection.once('open', () => {
 		context: integrationContext => Auth.handleAuth(authWhitelist, integrationContext),
 	});
 
-	server.listen(process.env.GRAPHQL_PORT||4000).then(({ url }) => console.log(`🚀 Server ready at ${url}`));
+	server.listen(process.env.GRAPHQL_PORT || 4000).then(({ url }) => console.log(`🚀 Server ready at ${url}`));
 	Hotwire.init({ port: process.env.SOCKETIO_PORT })
 })
