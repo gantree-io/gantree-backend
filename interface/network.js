@@ -22,7 +22,7 @@ module.exports = {
 		extend type Mutation {
 			addNetwork(name: String! count: Int! validators: Boolean! provider: String! binary_url: String! binary_name: String! binary_opts: [String], chainspec: String! project_id: String): Network!
 			deleteNetwork(_id: String!): Boolean
-      addCliNetwork(ipAddresses: String! config: String!): Boolean
+      addCliNetwork(cli_nodes: String! config: String!): Boolean
       deleteCliNetwork(_id: String!): Boolean
 		}
 	`,
@@ -38,8 +38,8 @@ module.exports = {
         await Network.add(network, team._id),
       deleteNetwork: async (_, { _id }, { team }) =>
         await Network.delete(_id, team._id),
-      addCliNetwork: async (_, { ipAddresses, config }, { team }) =>
-        await Network.addViaCli(ipAddresses, config, team._id),
+      addCliNetwork: async (_, { cli_nodes, config }, { team }) =>
+        await Network.addViaCli(cli_nodes, config, team._id),
       deleteCliNetwork: async (_, { _id }, { team }) =>
         await Network.deleteViaCli(_id, team._id)
     }

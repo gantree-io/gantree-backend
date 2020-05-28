@@ -199,9 +199,8 @@ Network.delete = async (_id, team_id) => {
 
 // How do we delete a network that was added via the CLI? We would need to make
 // a copy of the chainspec and store it in the teamfiles
-Network.addViaCli = async (ipAddresses, config, team_id) => {
-  console.log({ ipAddresses, config, team_id })
-  // we don't actually need the API Key here but YOLO for now
+Network.addViaCli = async (nodes, config, team_id) => {
+  console.log({ nodes, config, team_id })
 
   // we will probably also break some things regarding the providers, because at
   // the moment if we have any nodes on a provider it won't let us remove the
@@ -211,20 +210,52 @@ Network.addViaCli = async (ipAddresses, config, team_id) => {
   // need to loop through the config and pull out everything which has a place
   // in the database.
 
+  // TODO: should this be done elsewhere?
+  // destringify stuff
+  config = JSON.parse(config, " ", 4) // TODO: probably not ideal to shadow name, revisit in future
+  nodes = JSON.parse(nodes, " ", 4) // TODO: probably not ideal to shadow name, revisit in future
+
   // create network object
   const network = await Network.create({
     status: 'ONLINE',
-    name: 'placeholder',
-    binary_url: 'placeholder.com',
-    binary_name: 'placeholder',
-    chainspec: 'new',
+    name: config.metadata.project,
+    binary_url: config.binary.fetch.url,
+    binary_name: config.binary.filename,
+    chainspec: 'new', // TODO: FIXME: what is the significance/usage of this in backend?
     team: team_id
   })
 
-  // create node object(s)
+  // // WORKS!
+  // Node.add({
+  //   name: "greg",
+  //   provider: "DO",
+  //   ip: "115.28.250.51",
+  //   status: 'ONLINE',
+  //   config: false,
+  //   network: network // use the network just created
+  // })
 
-  // for (let ip of ipAddresses) {
-  // }
+  // create node object(s)
+  // shape of nodes: {"cfgIndex":0,"name":"my-node-name","ip":"186.100.33.41"}
+  nodes.forEach((node) => {
+    // console.log("going to create this node:")
+    // console.log(`
+    //   name: ${node.name}
+    //   provider: ${config.nodes[node.cfgIndex].instance.provider}
+    //   ip: ${node.ip}
+    //   status: ${'ONLINE'}
+    //   validator: ${config.nodes[node.cfgIndex].validator}
+    //   network: ${network}
+    // `)
+    Node.add({
+      name: node.name,
+      provider: config.nodes[node.cfgIndex].instance.provider, // get from config
+      ip: node.ip,
+      status: 'ONLINE', // status defaults to online
+      config: config.nodes[node.cfgIndex].validator, // get from config
+      network: network // use the network just created
+    })
+  })
 
   // let nodes = await Node.addMultiple(2, {
   //   network_id: network._id,
@@ -254,7 +285,7 @@ Network.addViaCli = async (ipAddresses, config, team_id) => {
 // }
 
 Network.deleteViaCli = async (_id, team_id) => {
-  console.log({ ipAddresses, config, team_id })
+  console.log({ _id, team_id })
 
   // create network object
   const network = await Network.deleteOne({
