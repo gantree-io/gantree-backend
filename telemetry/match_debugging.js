@@ -76,7 +76,7 @@ for (valid_match of valid_matches) {
             console.log("replaced with: " + colors.FgGreen + changed + colors.Reset)
             return changed
         } else {
-            console.log("bad match: " + colors.FgRed + match_candidate + colors.Reset)
+            console.log("bad match: " + colors.FgRed + match_candidate + " ≠ " + valid_match.match + colors.Reset)
             return match_candidate
         }
     })
