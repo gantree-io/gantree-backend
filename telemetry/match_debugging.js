@@ -9,7 +9,6 @@ const metric_list = [
 // const real_query = "rate(Bill_had_a_hat[5m])"
 // const real_query = "rate(Bill_had[5m])"
 const real_query = "rate(Bill_had[5m]) + rate(Bill[5m])"
-// const real_query = "rate(Bill_had_a_hat[5m])"
 
 let valid_matches = []
 
@@ -68,33 +67,26 @@ for (valid_match of valid_matches) {
 
     const valid_regexp = valid_match.regex_obj
     modified_query = modified_query.replace(valid_regexp, (match_candidate) => {
-        // if (metric_list.includes(match_candidate)) { //gives false positives
         console.log("--")
-        console.log("candidate: " + match_candidate)
+        console.log("candidate: " + colors.FgBlue + match_candidate + colors.Reset)
+        // if (metric_list.includes(match_candidate)) { //gives false positives
         if (match_candidate === valid_match.match) {
-            console.log("real match: " + match_candidate)
+            console.log("real match: " + colors.FgGreen + match_candidate + colors.Reset)
             const changed = `${match_candidate}{job="some_name"}`
-            console.log("replaced with: " + changed)
+            console.log("replaced with: " + colors.FgGreen + changed + colors.Reset)
             return changed
         } else {
-            console.log("bad match: " + match_candidate)
+            console.log("bad match: " + colors.FgRed + match_candidate + colors.Reset)
             return match_candidate
         }
-        // console.log("match candidate: " + match_candidate)
-        // console.log("match we got earlier: " + valid_match.match)
-        // console.log(match_candidate + " === " + valid_match.match)
-        // if (match_candidate === valid_match.match) {
-        //     return `${match_candidate}{job="some_name"}`
-        // } else {
-        //     return match_candidate
-        // }
     })
-    console.log("replace for " + valid_match.match + ": " + modified_query)
+    console.log("result for '" + valid_match.match + "' loop: " + modified_query)
 }
 
 // use this regex, run a function for each match you find
 // function
 // for each regex match, check it is an exact metric name
 
-
-console.log(modified_query)
+console.log(" ")
+console.log(colors.BgWhite + colors.FgBlack + "ORIGINAL QUERY:" + colors.Reset + " " + real_query)
+console.log(colors.BgWhite + colors.FgBlack + "MODIFIED QUERY:" + colors.Reset + " " + modified_query)
