@@ -1,6 +1,9 @@
-const { get_mock_metric_list, get_mock_query } = require('./mocked')
-
-const gen_regex_pairs = (metric_names) => {
+/**
+ * Create a regex pair for each item of input list
+ * @param {Array} metric_names
+ * @returns Array of regex pair objects
+ */
+const _gen_regex_pairs = (metric_names) => {
     let metrics = []
     for (name of metric_names) {
         metrics.push({ name: name, regex_string: `(${name}\\w*)` })
@@ -8,8 +11,15 @@ const gen_regex_pairs = (metric_names) => {
     return metrics
 }
 
+/**
+ * Scope all metrics in a PromQL query to a specific job
+ * @param {String} query - query to scope metrics of
+ * @param {Array} metric_names - names of metrics to scope
+ * @param {String} job_name - name of job to append
+ * @returns scoped version of query
+ */
 const scope_metrics = (query, metric_names, job_name) => {
-    const metrics = gen_regex_pairs(metric_names)
+    const metrics = _gen_regex_pairs(metric_names)
     for (metric of metrics) {
         query = query.replace(new RegExp(metric.regex_string, "g"), (match_candidate) => {
             if (match_candidate === metric.name) {
@@ -20,8 +30,6 @@ const scope_metrics = (query, metric_names, job_name) => {
     return query
 }
 
-// run the function
-const new_query = scope_metrics(get_mock_query(), get_mock_metric_list(), "team1network1")
-
-console.log("ORIGINAL: " + get_mock_query())
-console.log("MODIFIED: " + new_query)
+module.exports = {
+    scope_metrics
+}
