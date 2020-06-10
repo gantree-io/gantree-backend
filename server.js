@@ -32,11 +32,12 @@ mongoose.connection.once('open', () => {
 	const app = express()
 	app.get('*', (req, res) => {
 		// res.send("Hello, World!")
-		console.log(req)
+		// console.log(req)
 		PromRouter.handleReq(req, res).then((promRes) => {
 			// console.log(promRes)
 			res.send(promRes)
 		}).catch((error) => {
+			console.log(error)
 			res.send(error)
 		})
 
