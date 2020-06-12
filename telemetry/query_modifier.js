@@ -6,7 +6,7 @@
 const _gen_regex_pairs = (metric_names) => {
     let metrics = []
     for (name of metric_names) {
-        metrics.push({ name: name, regex_string: `(${name}\\w*)` })
+        metrics.push({ name: name, regex_string: `(${name}\\w*{?)` })
     }
     return metrics
 }
@@ -22,7 +22,10 @@ const scope_metrics = (query, metric_names, job_name) => {
     const metrics = _gen_regex_pairs(metric_names)
     for (metric of metrics) {
         query = query.replace(new RegExp(metric.regex_string, "g"), (match_candidate) => {
-            if (match_candidate === metric.name) {
+            if (match_candidate === `${metric.name}{`) {
+                return `${match_candidate}job="${job_name}",`
+            }
+            else if (match_candidate === metric.name) {
                 return `${match_candidate}{job="${job_name}"}`
             } else { return match_candidate }
         })
