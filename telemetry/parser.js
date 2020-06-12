@@ -73,6 +73,8 @@ console.log("----one param")
 PromQL.toObject('hello{job="jobname"}')
 console.log("----two params")
 PromQL.toObject('hello{job="jobname", instance="101.243.12.34"}')
+console.log("----something complex")
+PromQL.toObject('rate(polkadot_sub_libp2p_connections_opened_total[5m]) + 10')
 
 // PromQL.toString("")
 
