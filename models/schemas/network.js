@@ -5,39 +5,39 @@ const util = require('./_util');
 const schema = new mongoose.Schema(
 	{
 		name: {
-			type : String,
-			required : true,
+			type: String,
+			required: true,
 			trim: true
 		},
 		binary_url: {
-			type : String,
-			required : true,
+			type: String,
+			required: true,
 			trim: true,
 		},
 		binary_name: {
-			type : String,
-			required : true,
+			type: String,
+			required: true,
 			trim: true,
 		},
 		chainspec: {
-			type : String,
+			type: String,
 			//type: mongoose.Schema.Types.ObjectId,
 			//ref: 'chainspec',
-			required : true,
+			required: true,
 			trim: true,
 			//autopopulate: true
 		},
 		team: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'team',
-			required : true,
+			required: true,
 			trim: true,
 			autopopulate: true
 		},
 		status: {
-			type : String,
+			type: String,
 			enum: ['DEPLOYING', 'CONFIGURING', 'ONLINE', 'SHUTDOWN', "ERROR"],
-			required : true,
+			required: true,
 			trim: true,
 			default: 'DEPLOYING'
 		}
