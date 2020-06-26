@@ -4,6 +4,7 @@ module.exports = {
   typeDef: `
 		type Network {
 			_id: String!
+      project_id: String!
 			name: String!
 			status: String!
 			binary_url: String!
@@ -16,7 +17,8 @@ module.exports = {
 
 		extend type Query {
 			networks: [Network],
-			network(_id: String!): Network
+			network(_id: String!): Network,
+      networkByProjectId(project_id: String!): Network
 		}
 
 		extend type Mutation {
@@ -31,7 +33,9 @@ module.exports = {
       networks: async (_, { }, { team }) =>
         await Network.fetchAllByTeam(team._id),
       network: async (_, { _id }, { team }) =>
-        await Network.fetchById(_id, team._id)
+        await Network.fetchById(_id, team._id),
+      networkByProjectId: async (_, { project_id }, { team }) =>
+        await Network.fetchByProjectId(project_id, team._id)
     },
     Mutation: {
       addNetwork: async (_, network, { team }) =>

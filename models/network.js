@@ -222,7 +222,8 @@ Network.addViaCli = async (nodes, config, team_id) => {
     binary_url: config.binary.fetch.url,
     binary_name: config.binary.filename,
     chainspec: 'new', // TODO: FIXME: what is the significance/usage of this in backend?
-    team: team_id
+    team: team_id,
+    project_id: config.metadata.project
   })
 
   // // WORKS!
@@ -312,6 +313,23 @@ Network.fetchAllByTeam = async (team_id) => {
     _all.push(network)
   }
   return _all
+}
+
+Network.fetchByProjectId = async (project_id, team_id) => {
+  console.log("finding network by project id")
+
+  // TODO(Denver): get platform too
+  // const network = await Network.findOne({ project_id: project_id, platform: platform, team: team_id })
+  const network = await Network.findOne({ project_id: project_id, team: team_id })
+
+  if (network === null) { return null }
+
+  console.log({ network })
+  // const nodes = await Node.fetchByNetwork(network._id) // return networks nodes, probably not wanted in this func
+
+  return {
+    ...network.toObject()
+  }
 }
 
 module.exports = Network

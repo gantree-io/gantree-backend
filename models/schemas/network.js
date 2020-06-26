@@ -9,6 +9,11 @@ const schema = new mongoose.Schema(
 			required: true,
 			trim: true
 		},
+		project_id: {
+			type: String,
+			required: true,
+			trim: true
+		},
 		binary_url: {
 			type: String,
 			required: true,
