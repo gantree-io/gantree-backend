@@ -6,6 +6,8 @@ const Node = require('./node')
 const User = require('./user')
 const Team = require('./team')
 const Provider = require('./provider')
+const FetchMethod = require('./fetch_method')
+const RepositoryMethod = require('./repository_method')
 
 const rootTypeDef = gql`
 	type Query {
@@ -22,20 +24,22 @@ const rootTypeDef = gql`
 `;
 
 const rootResolvers = {
- 	Query: {
- 		ping: async () => true,
- 	}
+	Query: {
+		ping: async () => true,
+	}
 }
 
 module.exports = makeExecutableSchema({
 	typeDefs: [
-		rootTypeDef, 
-		Chainspec.typeDef, 
+		rootTypeDef,
+		Chainspec.typeDef,
 		Network.typeDef,
 		Node.typeDef,
 		User.typeDef,
 		Team.typeDef,
 		Provider.typeDef,
+		FetchMethod.typeDef,
+		RepositoryMethod.typeDef
 	],
 	resolvers: [
 		rootResolvers,
@@ -45,5 +49,7 @@ module.exports = makeExecutableSchema({
 		User.resolvers,
 		Team.resolvers,
 		Provider.resolvers,
+		FetchMethod.resolvers,
+		RepositoryMethod.resolvers
 	],
 });
