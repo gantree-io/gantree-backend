@@ -330,4 +330,41 @@ Network.fetchByProjectId = async (project_id, team_id) => {
   }
 }
 
+Network.sync = async (project_id, sudoconfig, team_id) => {
+  console.log("---- request to sync network! ----")
+  console.log({ project_id })
+  console.log({ sudoconfig })
+  console.log({ team_id })
+
+  // We don't care if network already exists, this is gantree-core's responsibility to know, we overwrite here
+
+  const network = await Network.findOne({ project_id: project_id, team: team_id })
+
+  if (network === null) {
+    console.log("creating missing network")
+    return true // TODO(Denver): needs to be changed
+  } else {
+    console.log("updating existing network")
+    return true // TODO(Denver): needs to be changed
+  }
+
+  // if (existingNetwork === null) {
+  //   console.log("creating a missing network")
+  //   // network = await Network.create({
+  //   //   status: 'ONLINE',
+  //   //   name: config.metadata.project,
+  //   //   binary_url: config.binary.fetch.url,
+  //   //   binary_name: config.binary.filename,
+  //   //   chainspec: 'new', // TODO: FIXME: what is the significance/usage of this in backend?
+  //   //   team: team_id,
+  //   //   project_id: config.metadata.project,
+  //   //   // platform: platform
+  //   // })
+  //   return true // TODO(Denver): change this
+  // } else {
+  //   console.log("WIP - updating existing network")
+  //   return true // TODO(Denver): change this
+  // }
+}
+
 module.exports = Network
