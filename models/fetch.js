@@ -1,15 +1,15 @@
 const mongoose = require('mongoose')
-const FetchSchema = require('@schemas/fetch');
+const FetchMethodSchema = require('@schemas/fetch_method');
 
 // model
-const Fetch = mongoose.model('fetch', FetchSchema)
+const FetchMethod = mongoose.model('fetch_method', FetchMethodSchema)
 
-Fetch.add = async ({ url, sha256, network }) => await Fetch.create({
+FetchMethod.add = async ({ url, sha256, network }) => await FetchMethod.create({
 	url: url,
 	sha256: sha256,
 	network: network
 })
 
-Fetch.fetchByUrl = async url => await Fetch.find({ url: url })
+FetchMethod.fetchByUrl = async url => await FetchMethod.find({ url: url })
 
-module.exports = Fetch
+module.exports = FetchMethod
