@@ -3,6 +3,7 @@ const path = require('path')
 const NetworkSchema = require('@schemas/network')
 const Node = require('./node')
 const Provider = require('./provider')
+const Binary = require('./binary')
 const Hotwire = require('@util/hotwire')
 const Gantree = require('@util/gantree')
 const TeamStorage = require('@util/teamstorage')
@@ -12,37 +13,58 @@ const Network = mongoose.model('network', NetworkSchema)
 
 // add a new network
 Network.add = async (
+  platform,
   {
+    config_version,
     project_id,
-    binary_url,
-    binary_name,
-    binary_opts,
+    nickname,
+    binary_args,
+    node_args_list,
     chainspec,
-    validators,
-    provider,
-    count
+    // team, // gotten from team_id
+    status
   },
+  // {
+  //   provider,
+  //   count
+  // },
   team_id
 ) => {
   const ts = new TeamStorage(team_id)
 
-  // get provider credentails
+  // add binary to DB
+  const binary = await Binary.add(
+    binary_args
+    // method: method,
+    // repository_method: repository_method,
+    // fetch_method: fetch_method,
+    // local_method: local_method,
+    // preset_method: preset_method,
+    // filename: filename
+  )
+
+  const binary_url = binary.url // TEMPORARY
+  const binary_name = binary.filename // TEMPORARY
+  const binary_opts = [] // TEMPORARY: NEEDS TO BE TAKEN ON PER-NODE BASIS
+
+  // get provider credentials
   const creds = await Provider.findOne({ _id: provider, team: team_id })
 
   // add network to DB
   const network = await Network.create({
+    config_version: config_version,
     project_id: project_id,
-    binary_url: binary_url,
-    binary_name: binary_name,
+    nickname: nickname,
+    binary: binary,
     chainspec: chainspec,
-    team: team_id
+    team: team_id,
+    status: status
   })
 
   // add nodes to DB
-  let nodes = await Node.addMultiple(count, {
-    network_id: network._id,
-    validator: validators,
-    provider: creds.provider
+  let nodes = await Node.addMultiple({
+    node_args_list: node_args_list,
+    network_id: network._id
   })
 
   //////////////////////////////////////////
@@ -54,7 +76,7 @@ Network.add = async (
     let config = new Gantree.config(network._id)
     config.binaryUrl = binary_url
     config.binaryName = binary_name
-    config.binaryOpts = binary_opts
+    config.binaryOpts = binary_opts // TODO(Denver): this should be on a per-node basis
 
     // the chainspec can be one of the following
     // 'new' | Build New Spec | ???
@@ -330,11 +352,16 @@ Network.fetchByProjectId = async (project_id, team_id) => {
   }
 }
 
-Network.sync = async (project_id, sudoconfig, team_id) => {
+// /**@param {{test: String, test2: Number}} network_args */
+
+Network.sync = async (project_id, platform, network_args, team_id) => {
   console.log("---- request to sync network! ----")
   console.log({ project_id })
-  console.log({ sudoconfig })
+  console.log({ platform })
+  console.log({ network_args })
   console.log({ team_id })
+
+  network_args = JSON.parse(network_args)
 
   // We don't care if network already exists, this is gantree-core's responsibility to know, we overwrite here
 
@@ -342,6 +369,7 @@ Network.sync = async (project_id, sudoconfig, team_id) => {
 
   if (network === null) {
     console.log("creating missing network")
+    await Network.add(platform, network_args, team_id)
     return true // TODO(Denver): needs to be changed
   } else {
     console.log("updating existing network")
