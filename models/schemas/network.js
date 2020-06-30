@@ -26,16 +26,6 @@ const schema = new mongoose.Schema(
 			trim: true,
 			autopopulate: true
 		},
-		binary_url: {
-			type: String,
-			required: true,
-			trim: true,
-		},
-		binary_name: {
-			type: String,
-			required: true,
-			trim: true,
-		},
 		chainspec: {
 			type: String,
 			//type: mongoose.Schema.Types.ObjectId,
