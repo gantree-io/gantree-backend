@@ -1,0 +1,50 @@
+metadata.version                             -> config_version
+metadata.project                             -> project_id
+metadata.nickname                            -> nickname
+binary.repository                            -> ((if exists)) binary: [Binary].method = "repository"
+binary.repository.url                        -> binary: [Binary].repository: [Repository].url
+binary.repository.version                    -> binary: [Binary].repository: [Repository].version
+binary.repository.localCompile               -> n/a
+binary.fetch                                 -> ((if exists)) binary: [Binary].method = "fetch"
+binary.fetch.url                             -> binary: [Binary].fetch: [Fetch].url
+binary.fetch.sha256                          -> binary: [Binary].fetch: [Fetch].sha256
+binary.local                                 -> ((if exists)) binary: [Binary].method = "local"
+binary.local.path                            -> binary: [Binary].local: [Local].path
+binary.local.sha256                          -> n/a
+binary.preset                                -> ((if exists)) binary: [Binary].method = "preset"
+"                                            -> binary: [Binary].preset
+binary.filename                              -> binary: [Binary].filename
+nodes[n].name                                -> nodes[n]: name
+nodes[n].instance                            -> nodes[n]: [Instance]
+nodes[n].instance.sshPrivateKeyPath          -> n/a
+nodes[n].instance.sshPrivateKeyAlias         -> nodes[n]: [Instance].ssh_private_key_alias
+nodes[n].instance.sshUser                    -> nodes[n]: [Instance].ssh_user
+nodes[n].instance.provider                   -> nodes[n]: [Instance].provider
+nodes[n].instance.machineType                -> n/a
+nodes[n].instance.location                   -> n/a
+nodes[n].instance.zone                       -> n/a
+nodes[n].instance.projectId                  -> n/a
+nodes[n].instance.firewall                   -> n/a
+nodes[n].instance.firewall.rules             -> n/a
+nodes[n].instance.firewall.rules[n].protocol -> n/a
+nodes[n].instance.firewall.rules[n].cidrIp   -> n/a
+nodes[n].instance.firewall.rules[n].protocol -> n/a
+nodes[n].instance.firewall.rules[n].from     -> n/a
+nodes[n].instance.firewall.rules[n].to       -> n/a
+nodes[n].validator                           -> nodes[n]: type = "VALIDATOR" || type = "FULL"
+nodes[n].palletOptions                       -> nodes[n]: pallet_options (stringified)
+nodes[n].palletOptions.auraAddress           -> < see above >
+nodes[n].palletOptions.grandpa               -> < see above >
+nodes[n].palletOptions.grandpa.address       -> < see above >
+nodes[n].palletOptions.grandpa.weight        -> < see above >
+nodes[n].binaryOptions                       -> nodes[n]: binary_options (stringified)
+nodes[n].binaryOptions.substrateOptions      -> < see above >
+nodes[n].binaryOptions.telemetry             -> < see above >
+nodes[n].binaryOptions.rpcPort               -> < see above >
+nodes[n].binaryOptions.loggingFilter         -> < see above >
+nodes[n].chain                               -> nodes[n]: chain
+nodes[n].useBinChainSpec                     -> nodes[n]: is_bin_chainspec
+nodes[n].mnemonic                            -> n/a
+
+
+
