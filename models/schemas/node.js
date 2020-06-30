@@ -4,43 +4,54 @@ const util = require('./_util');
 const schema = new mongoose.Schema(
 	{
 		name: {
-			type : String,
-			required : true,
+			type: String,
+			required: true,
 			trim: true
 		},
-		provider: {
-			type : String,
-			required : true,
+		instance: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'instance',
+			required: true,
 			trim: true,
-			enum: ['DO', 'AWS', 'GCP'],
-		},
-		ip: {
-			type : String,
-			trim: true
+			autopopulate: true
 		},
 		status: {
-			type : String,
+			type: String,
 			enum: ['DEPLOYING', 'CONFIGURING', 'ONLINE', 'SHUTDOWN', 'ERROR'],
-			required : true,
+			required: true,
 			trim: true,
 			default: 'DEPLOYING'
 		},
-		validator: {
-			type : Boolean,
-			trim: true,
+		type: {
+			type: String,
+			enum: ['VALIDATOR', 'FULL'],
 			required: true,
-			default: false
+			trim: true
 		},
-		// type: {
-		// 	type : String,
-		// 	enum: ['VALIDATOR', 'FULL'],
-		// 	required : true,
-		// 	trim: true
-		// },
+		pallet_options: {
+			type: String,
+			required: true,
+			trim: true
+		},
+		binary_options: {
+			type: String,
+			required: true,
+			trim: true
+		},
+		chain: {
+			type: String,
+			required: true,
+			trim: true
+		},
+		is_bin_chainspec: {
+			type: String,
+			required: true,
+			trim: true
+		},
 		network: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'network',
-			required : true,
+			required: true,
 			trim: true,
 			autopopulate: true
 		}

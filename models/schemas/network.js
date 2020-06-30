@@ -4,10 +4,27 @@ const util = require('./_util');
 
 const schema = new mongoose.Schema(
 	{
+		config_version: {
+			type: String,
+			required: true,
+			trim: true
+		},
 		project_id: {
 			type: String,
 			required: true,
 			trim: true
+		},
+		nickname: {
+			type: String,
+			required: true,
+			trim: true
+		},
+		binary: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'binary',
+			required: true,
+			trim: true,
+			autopopulate: true
 		},
 		binary_url: {
 			type: String,
