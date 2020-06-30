@@ -25,7 +25,7 @@ module.exports = {
 			deleteNetwork(_id: String!): Boolean
       addCliNetwork(cli_nodes: String! config: String!): Boolean
       deleteCliNetwork(_id: String!): Boolean
-      syncNetwork(project_id: String!): Boolean
+      syncNetwork(project_id: String! platform: String! network_args: String!): Boolean
 		}
 	`,
   resolvers: {
@@ -47,8 +47,8 @@ module.exports = {
       deleteCliNetwork: async (_, { _id }, { team }) =>
         await Network.deleteViaCli(_id, team._id),
       // NOTE(Denver): will need to parse sudoconfig too
-      syncNetwork: async (_, { project_id }, { team }) =>
-        await Network.sync(project_id, team._id)
+      syncNetwork: async (_, { project_id, platform, network_args }, { team }) =>
+        await Network.sync(project_id, platform, network_args, team._id)
     }
   }
 }
