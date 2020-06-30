@@ -9,25 +9,25 @@ const schema = new mongoose.Schema(
 			required: true,
 			trim: true,
 		},
-		repository: {
+		repository_method: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'repository',
 			trim: true,
 			autopopulate: true
 		},
-		fetch: {
+		fetch_method: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'fetch',
 			trim: true,
 			autopopulate: true
 		},
-		local: {
+		local_method: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'local',
 			trim: true,
 			autopopulate: true
 		},
-		preset: {
+		preset_method: {
 			type: String,
 			// enum: preset_list,
 			required: true,
