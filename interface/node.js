@@ -1,7 +1,7 @@
 const Node = require('@models/node')
 
 module.exports = {
-	typeDef: `
+  typeDef: `
 		type Node {
 			_id: String
 			name: String
@@ -20,14 +20,14 @@ module.exports = {
 			deleteNode(_id: String!): Node!
 		}
 	`,
-	resolvers: {
-		Query: {
-			node: async (_, {_id}, {user}) => await Node.findOne(_id, user.team_id),
-			nodes: async (_, {network_id}, {user}) => await Node.findAll(network_id, user.team_id),
-		},
-		Mutation: {
-			//addNodes: async (parent, {count, ...rest}, {user}) => await Node.addMultiple(count, rest, user.team_id),
-			deleteNode: async (parent, {_id}, {user}) => await Node.delete(_id, user.team_id),
-		}
-	}
+  resolvers: {
+    Query: {
+      node: async (_, { _id }, { user }) => await Node.findOne(_id, user.team_id),
+      nodes: async (_, { network_id }, { user }) => await Node.findAll(network_id, user.team_id),
+    },
+    Mutation: {
+      //addNodes: async (parent, {count, ...rest}, {user}) => await Node.addMultiple(count, rest, user.team_id),
+      deleteNode: async (parent, { _id }, { user }) => await Node.delete(_id, user.team_id),
+    }
+  }
 }
