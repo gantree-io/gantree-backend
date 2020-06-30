@@ -30,7 +30,6 @@ const schema = new mongoose.Schema(
 		preset_method: {
 			type: String,
 			// enum: preset_list,
-			required: true,
 			trim: true,
 		},
 		filename: {
