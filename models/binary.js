@@ -4,15 +4,16 @@ const BinarySchema = require('@schemas/binary');
 // model
 const Binary = mongoose.model('binary', BinarySchema)
 
-Binary.add = async ({ method, repository, fetch, local, preset, filename }) => await Binary.create({
+Binary.fetchByNetwork = async network_id => await Binary.find({ network: network_id })
+
+Binary.add = async ({ method, repository, fetch, local, preset, filename, network }) => await Binary.create({
 	method: method,
 	repository: repository,
 	fetch: fetch,
 	local: local,
 	preset: preset,
-	filename: filename
+	filename: filename,
+	network: network
 })
-
-Binary.fetchByNetwork = async network_id => await Binary.find({ network: network_id })
 
 module.exports = Binary
