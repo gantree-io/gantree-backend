@@ -13,15 +13,14 @@ const Network = mongoose.model('network', NetworkSchema)
 // add a new network
 Network.add = async (
   {
-    name,
+    project_id,
     binary_url,
     binary_name,
     binary_opts,
     chainspec,
     validators,
     provider,
-    count,
-    project_id
+    count
   },
   team_id
 ) => {
@@ -32,7 +31,7 @@ Network.add = async (
 
   // add network to DB
   const network = await Network.create({
-    name: name,
+    project_id: project_id,
     binary_url: binary_url,
     binary_name: binary_name,
     chainspec: chainspec,
@@ -218,12 +217,11 @@ Network.addViaCli = async (nodes, config, team_id) => {
   // create network object
   const network = await Network.create({
     status: 'ONLINE',
-    name: config.metadata.project,
-    binary_url: config.binary.fetch.url,
-    binary_name: config.binary.filename,
+    project_id: config.metadata.project, // TODO(Denver): should use gcoAL here
+    binary_url: config.binary.fetch.url, // TODO(Denver): should use gcoAL here
+    binary_name: config.binary.filename, // TODO(Denver): should use gcoAL here
     chainspec: 'new', // TODO: FIXME: what is the significance/usage of this in backend?
-    team: team_id,
-    project_id: config.metadata.project
+    team: team_id
   })
 
   // // WORKS!

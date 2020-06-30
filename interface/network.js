@@ -5,7 +5,6 @@ module.exports = {
 		type Network {
 			_id: String!
       project_id: String!
-			name: String!
 			status: String!
 			binary_url: String!
 			binary_name: String!
@@ -22,7 +21,7 @@ module.exports = {
 		}
 
 		extend type Mutation {
-			addNetwork(name: String! count: Int! validators: Boolean! provider: String! binary_url: String! binary_name: String! binary_opts: [String], chainspec: String! project_id: String): Network!
+			addNetwork(project_id: String! count: Int! validators: Boolean! provider: String! binary_url: String! binary_name: String! binary_opts: [String], chainspec: String! project_id: String): Network!
 			deleteNetwork(_id: String!): Boolean
       addCliNetwork(cli_nodes: String! config: String!): Boolean
       deleteCliNetwork(_id: String!): Boolean

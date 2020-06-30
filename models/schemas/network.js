@@ -4,11 +4,6 @@ const util = require('./_util');
 
 const schema = new mongoose.Schema(
 	{
-		name: {
-			type: String,
-			required: true,
-			trim: true
-		},
 		project_id: {
 			type: String,
 			required: true,
