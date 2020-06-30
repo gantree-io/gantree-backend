@@ -37,6 +37,13 @@ const schema = new mongoose.Schema(
 			type: String,
 			required: true,
 			trim: true
+		},
+		network: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'network',
+			required: true,
+			trim: true,
+			autopopulate: true
 		}
 	},
 	{ timestamps: util.timestamps }
