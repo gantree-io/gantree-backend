@@ -1,0 +1,19 @@
+{
+    "script": "server.js",
+    "watch": [
+        "docs",
+        "email",
+        "interface",
+        "models",
+        "telemetry",
+        "util"
+    ],
+    "ignore_watch": [
+        "node_modules",
+        "public/images"
+    ],
+    "watch_options": {
+        "followSymlinks": false
+    },
+    "name": "gantree-server"
+}
