@@ -32,4 +32,26 @@ Binary.add = async ({ method, repository_method, fetch_method, local_method, pre
   })
 }
 
+Binary.delete = async (_id, team_id) => {
+  await Binary.deleteOne({ _id: _id, team: team_id })
+
+  return true
+}
+
+Binary.fetchById = async (_id, team_id) => {
+  const binary = await Binary.findOne({ _id: _id, team: team_id })
+
+  return binary.toObject()
+}
+
+Binary.fetchAllByTeam = async (team_id) => {
+  const binaries = await Binary.find({ team: team_id })
+  const _all = []
+  for (var i = 0; i < binaries.length; i++) {
+    let binary = await Binary.fetchById(binaries[i]._id, team_id)
+    _all.push(binary)
+  }
+  return _all
+}
+
 module.exports = Binary
