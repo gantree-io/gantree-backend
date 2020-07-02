@@ -37,7 +37,14 @@ const schema = new mongoose.Schema(
 			type: String,
 			required: true,
 			trim: true
-		}
+		},
+		team: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'team',
+			required: true,
+			trim: true,
+			autopopulate: true
+		},
 	},
 	{ timestamps: util.timestamps }
 )
