@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 const util = require('./_util');
 
+const RepositoryMethod = require('./repository_method')
+const FetchMethod = require('./fetch_method')
+
 const schema = new mongoose.Schema(
 	{
 		method: {
@@ -11,14 +14,12 @@ const schema = new mongoose.Schema(
 			trim: true,
 		},
 		repository_method: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'repository_method',
+			type: RepositoryMethod,
 			trim: true,
 			autopopulate: true
 		},
 		fetch_method: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'fetch_method',
+			type: FetchMethod,
 			trim: true,
 			autopopulate: true
 		},
