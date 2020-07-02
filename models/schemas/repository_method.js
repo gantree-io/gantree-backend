@@ -17,7 +17,7 @@ const schema = new mongoose.Schema(
     { timestamps: util.timestamps }
 )
 
-schema.plugin(require('mongoose-autopopulate'));
+// schema.plugin(require('mongoose-autopopulate'));
 schema.set('toJSON', { virtuals: true })
 
 module.exports = schema

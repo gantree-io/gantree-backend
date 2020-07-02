@@ -10,14 +10,14 @@ const schema = new mongoose.Schema(
         },
         sha256: {
             type: String,
-            required: true,
+            required: false,
             trim: true,
         }
     },
     { timestamps: util.timestamps }
 )
 
-schema.plugin(require('mongoose-autopopulate'));
+// schema.plugin(require('mongoose-autopopulate'));
 schema.set('toJSON', { virtuals: true })
 
 module.exports = schema
