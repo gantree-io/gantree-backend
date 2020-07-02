@@ -260,8 +260,8 @@ const createNetwork = async ({configPath, providerCredentials, sshPrivateKeyPath
 		// configure network
 		else{
 			// execSync(`ssh-add -D`, {stdio: 'inherit'})
-			execSync(`ssh-add ${sshPrivateKeyPath}`, {stdio: 'inherit'})
-			const cmd = `npx -q gantree-cli sync`;
+			// execSync(`ssh-add ${sshPrivateKeyPath}`, {stdio: 'inherit'})
+			const cmd = `npx -q -p gantree-core@${process.env['GANTREE_CORE_VERSION']} gantree-cli sync`;
 			execResult = exec(cmd, onFinish)
 			return new Promise((resolve, reject) => {
 				let rejectTimer = setTimeout(() => reject('Gantree CLI Timeout'), 300000)
@@ -298,7 +298,7 @@ const deleteNetwork = async ({configPath, allProviderCredentials}) => {
 		}
 		// configure network
 		else{
-			const cmd = `npx -q gantree-cli clean`;
+			const cmd = `npx -q -p gantree-core@${process.env['GANTREE_CORE_VERSION']} gantree-cli clean`;
 			console.log({cmd})
 			return new Promise((resolve, reject) => {
 				result = exec(cmd, (e, stdout, stderr) => {
